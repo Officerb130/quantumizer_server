@@ -1,0 +1,3231 @@
+{
+    "class":[
+       {
+          "name":"Undefined Debit",
+          "hidden":false,
+          "group":"Undefined Debit",
+          "classifiers":[]
+       },
+       {
+         "name":"Undefined Credit",
+         "hidden":false,
+         "group":"Undefined Credit",
+         "type":"Credit Abnormal",
+         "classifiers":[]
+      },
+       {
+          "name":"Bakery",
+          "hidden":false,
+          "group":"Food",
+          "classifiers":[
+             {
+                "regex":".*BAKERS DELIGHT.*"
+             },
+             {
+                "regex":".*PHILLIPPA.*"
+             },
+             {
+                "regex":".*BRUMBY.*"
+             },
+             {
+                "regex":".*KEITH HOME MADE.*"
+             },
+             {
+                "regex":".*FRESHWATER CREEK CAKES.*"
+             },
+             {
+                "regex":"Bakery.*"
+             },
+             {
+                "regex":".*BAKED BY THE BAY.*"
+             },
+             {
+                "regex":".*BAKERY.*"
+             },
+            {
+               "regex":".*SUNBEAM HOMEMADE CAKES.*"
+            },
+            {
+               "regex":".*BAKERIES.*"
+            }
+          ]
+       },
+       {
+          "name":"Supermarket",
+          "hidden":false,
+          "group":"Food",
+          "classifiers":[
+             {
+                "regex":".*THOMAS DUX.*"
+             },
+             {
+                "regex":".*COLES.*"
+             },
+             {
+                "regex":".*SAFEWAY.*"
+             },
+             {
+                "regex":".*WOOLWORTHS.*"
+             },
+             {
+               "regex":".*IGA LOCAL GRO.*"
+            },
+             {
+                "regex":".*FOODWORKS.*"
+             },
+             {
+                "regex":".*AUSSIE FARMERS DIRECT.*"
+             },
+             {
+                "regex":".*FLINDERS GENERAL STORE.*"
+             },
+             {
+                "regex":".*WOOLWORTHS ONLINE.*"
+             },
+             {
+               "regex":".*Woolworths Online.*"
+            },
+             {
+                "regex":"ALDI.*"
+             },
+             {
+                "regex":"EFTPOS ALDI.*"
+             },
+             {
+                "regex":"H AND H FLINDERS.*"
+             },
+             {
+                "regex":".*FLINDERS GENERA.*"
+             },
+             {
+                "regex":".*ANGLESEA LICENCED SUP.*"
+             },
+             {
+                "regex":".*BLAIRGOWRIE FOOD & L.*"
+             },
+             {
+                "regex":".*DIAMOND BRIDGE AUSTR.*"
+             },
+             {
+                "regex":".*Anglesea General.*"
+             },
+             {
+                "regex":".*BLUFF RD SUPERMARKET.*"
+             },
+             {
+                "regex":".*AIREYS INLET GENERAL.*"
+             },
+             {
+               "regex":".*The Source Bulk Foods.*"
+            },
+             {
+               "regex":".*WW METRO.*"
+            }
+
+            
+          ]
+       },
+       {
+          "name":"Butcher",
+          "hidden":false,
+          "group":"Food",
+          "classifiers":[
+             {
+                "regex":".*LAMONTS.*"
+             },
+             {
+                "regex":".*SOUTH CITY MEATS.*"
+             },
+             {
+               "regex":".*JMT OPERATONS PT.*"
+            },
+             {
+                "regex":".*PENINSULA BULK MEATS.*"
+             },
+             {
+                "regex":".*BLACKROCKVILLAGEMEA.*"
+             },
+             {
+               "regex":".*Black Rock Meats.*"
+            },
+             {
+                "regex":".*BLACK ROCK VILLAGE M .*"
+             }
+          ]
+       },
+       {
+          "name":"Fruit Shop",
+          "hidden":false,
+          "group":"Food",
+          "classifiers":[
+             {
+                "regex":".*HAMPTON FRUIT.*"
+             },
+             {
+                "regex":".*CHRISP&GREEN.*"
+             },
+             {
+               "regex":".*SCICLUNA.*"
+            },
+             {
+                "regex":"SANDRINGHAM FRUIT.*"
+             },
+             {
+                "regex":".*DOSECE PTY LIMITED.*"
+             },
+             {
+                "regex":"AMALOCAL PTY LTD.*"
+             },
+             {
+                "regex":".*BERRIES ON THE ROCK.*"
+             },
+             {
+                "regex":".*CRISP AND GREEN.*"
+             },
+             {
+                "regex":".*BILLS FARM.*"
+             },
+             {
+                "regex":".*AMALOCAL.*"
+             },
+            {
+                "regex":".*THE MERCHANT BEAUMAR.*"
+             },
+             {
+               "regex":".*ANGLESEA FRUITZ.*"
+            },
+             {
+               "regex":".*FRESH CONNECTION.*"
+            } 
+          ]
+       },
+       {
+          "name":"Delicatessen",
+          "hidden":false,
+          "group":"Food",
+          "classifiers":[
+             {
+                "regex":".*Delicatesson.*"
+             },
+             {
+                "regex":".*FEAST ON HAMPTON.*"
+             },
+             {
+               "regex":".*Devolas of Brighton.*"
+            },
+             {
+                "regex":".*PANTRY DELICATESSE.*"
+             },
+             {
+                "regex":".*THE FRESH PASTA SHOP.*"
+             },
+             {
+                "regex":".*THE PASTA EATER.*"
+             },
+             {
+                "regex":".*THE PANTRY.*"
+             },
+             {
+                "regex":".*JOHNNY RIPE.*"
+             },
+             {
+                "regex":".*Houlihans of Brighton.*"
+             },
+             {
+                "regex":".*BAROSSA RETAIL FOOD.*"
+             }
+          ]
+       },
+       {
+          "name":"Seafood",
+          "hidden":false,
+          "group":"Food",
+          "classifiers":[
+             {
+                "regex":".*FEGARI.*"
+             },
+             {
+               "regex":".*FERGS.*"
+            }
+          ]
+       },
+       {
+         "name":"Canteen",
+         "hidden":false,
+         "group":"Food",
+         "classifiers":[
+            {
+               "regex":".*CVI NOMINEES.*"
+            }
+         ]
+      },
+       {
+          "name":"Food - Misc",
+          "hidden":false,
+          "group":"Food",
+          "classifiers":[
+             {
+                "regex":".*GATEAU.*"
+             },
+             {
+                "regex":".*THE FOODSMITH.*"
+             },
+             {
+                "regex":".*HAMPTON HEALTH FOODS.*"
+             },
+             {
+                "regex":".*CRISP&GREEN.*"
+             },
+             {
+                "regex":"MOKA PATISSERIE.*"
+             },
+             {
+                "regex":"CORNERSTONE AND CO.*"
+             },
+             {
+                "regex":"POSIES&PATTY CAKES.*"
+             },
+             {
+                "regex":"BROWN COW.*"
+             },
+             {
+                "regex":".*SHAKES JUICE.*"
+             },
+             {
+               "regex":"CHOKOLAT.*"
+            }
+          ]
+       },
+       {
+          "name":"Alcohol",
+          "hidden":false,
+          "group":"Food",
+          "classifiers":[
+             {
+                "regex":".*IAN MARKS.*"
+             },
+             {
+                "regex":".*DAN MURPHYS.*"
+             },
+             {
+                "regex":"BWS LIQUOR.*"
+             },
+             {
+               "regex":"SANDRINGHAM UNCORKED.*"
+            },
+             {
+               "regex":".*DENDY VILLAGE CELLARS.*"
+            },
+             {
+                "regex":".*BWS.*3658.*"
+             },
+             {
+                "regex":".*LIQUORLAND.*"
+             },
+             {
+                "regex":".*THIRSTY CAMEL.*"
+             },
+             {
+                "regex":".*Sessions Sandringham.*"
+             },
+             {
+               "regex":".*BWS.*SANDRINGHAM.*"
+            },
+            {
+               "regex":".*BOTTLE HOUSE.*"
+            }
+             
+          ]
+       },
+       {
+          "name":"Drugs",
+          "hidden":false,
+          "group":"Health",
+          "classifiers":[
+             {
+                "regex":".*PHARMACY.*"
+             },
+             {
+                "regex":".*BAY PHARMAC.*"
+             },
+             {
+               "regex":".*Amcal Pha.*"
+            },
+            {
+               "regex":".*HAMPTON RX.*"
+            },
+             {
+                "regex":".*AMCAL PHAR.*"
+             },
+             {
+                "regex":".*NATIONWIDE COMPOUND.*"
+             },
+             {
+                "regex":".*PHARM 360.*"
+             },
+             {
+                "regex":".*NATIONAL PHARMACIES.*"
+             },
+             {
+               "regex":".*ALLERGYSHOP.*"
+            },
+            {
+               "regex":".*PLINE PH.*"
+            },
+            {
+               "regex":".*MY CHEMIST.*"
+            },
+             {
+               "regex":".*DISCOUNT CHEMIST.*"
+            },
+            {
+               "regex":".*TERRYWHITE CHEMMART.*"
+            }
+          ]
+       },
+       {
+          "name":"General",
+          "hidden":false,
+          "group":"Health",
+          "classifiers":[
+             {
+                "regex":".*PHYSIO.*"
+             },
+             {
+                "regex":"ST VINCENTS PRIVATE.*"
+             },
+             {
+                "regex":"MELBOURNE PATHOLOGY.*"
+             },
+             {
+                "regex":"NEONATES.*"
+             },
+             {
+                "regex":".*AMBULANCE VICTORIA.*"
+             },
+             {
+               "regex":".*CHINESE MASSAGE.*"
+            },
+             {
+                "regex":".*MELBOURNE IVF.*"
+             },
+             {
+               "regex":".*CABRINI HEALTH LIMIT.*"
+            }
+          ]
+       },
+       {
+          "name":"Doctor",
+          "hidden":false,
+          "group":"Health",
+          "classifiers":[
+             {
+                "regex":".*NEW ST MEDICAL.*"
+             },
+             {
+                "regex":".*NEW STREET MEDICAL.*"
+             },
+             {
+                "regex":".*SUNSPOT.*"
+             },
+             {
+               "regex":".*SOUTH ROAD DERMATOLO.*"
+            },
+             {
+                "regex":".*TIMOTHY NICHOLLS.*"
+             },
+             {
+                "regex":".*NICHOLAS FREEZER.*"
+             },
+             {
+                "regex":".*MELBOURNE HEART CARE.*"
+             },
+             {
+                "regex":"DR LIONEL H STEIN.*"
+             },
+             {
+                "regex":".*DR GUY SKINNER.*"
+             },
+             {
+                "regex":".*DANIEL THOMS.*"
+             },
+             {
+                "regex":".*CARNEGIE SKIN CANCER.*"
+             },
+             {
+                "regex":".*Brighton Health Clini.*"
+             },
+             {
+                "regex":".*BAYSIDE EYECARE.*"
+             },
+             {
+                "regex":".*HAMPTON ST EYE CLINIC.*"
+             },
+             {
+                "regex":".*DR JEREMY BANKY.*"
+             },
+             {
+               "regex":".*Dean Tey Parkville.*"
+             },
+             {
+               "regex":".*BARE LASER SKIN CLINI.*"
+            }
+          ]
+       },
+       {
+          "name":"Books",
+          "hidden":false,
+          "group":"Goods",
+          "classifiers":[
+             {
+                "regex":".*BOOKDEPOSITORY.*"
+             },
+             {
+                "regex":".*BOOKSTORE.*"
+             },
+             {
+                "regex":".*THESAURUS BOOKSELLER.*"
+             },
+             {
+                "regex":".*SMIGGLE.*"
+             },
+             {
+                "regex":".*THESAURUS BOOK.*"
+             },
+             {
+                "regex":".*DYMOCKS.*"
+             },
+             {
+                "regex":".*KIDNA BOOKS AND MINE.*"
+             },
+             {
+               "regex":".*THE BOOK DEPOSITORY.*"
+            },
+            {
+               "regex":".*DIRECT BOOK SALES.*"
+            }
+          ]
+       },
+       {
+          "name":"Toys",
+          "hidden":false,
+          "group":"Goods",
+          "classifiers":[
+             {
+                "regex":".*Kidstuff.*"
+             },
+             {
+                "regex":"Trombie.*"
+             },
+             {
+                "regex":"TOTSNTALES.*"
+             },
+             {
+               "regex":"TOYWORLD.*"
+            },
+             {
+                "regex":"THE TOY SOLDIER.*"
+             },
+             {
+                "regex":".*TOYS R US.*"
+             },
+             {
+                "regex":".*NAUGHTS AND CROSSES.*"
+             },
+             {
+               "regex":".*TOYBOX TALES.*"
+            },
+             {
+               "regex":".*BUILD-A-BEAR.*"
+            }
+          ]
+       },
+       {
+          "name":"ChildCare",
+          "hidden":false,
+          "group":"Services",
+          "classifiers":[
+             {
+                "regex":".*SandyBeach.*"
+             }
+          ]
+       },
+       {
+          "name":"Cycling",
+          "hidden":true,
+          "group":"Goods",
+          "classifiers":[
+            {
+                "regex":".*PAYIN4 1800073263.*"
+            },
+            {
+               "regex":".*PROBIKEKIT.*"
+            },
+            {
+               "regex":".*Cycle Centre.*"
+            },
+            {
+               "regex":".*TREK BICYCLE.*"
+            },
+            {
+               "regex":".*99 BIKES.*"
+            },
+            {
+               "regex":".*PEDAL MAFIA.*"
+            },
+            {
+               "regex":".*BICYCLE SUPERSTORE.*"
+            },
+            {
+               "regex":".*AusCycling Race.*"
+            },
+            {
+                "regex":".*Cycles Galleria.*"
+            },
+            {
+               "regex":".*GOOD CYCLES LTD.*"
+            },
+            {
+               "regex":".*Urban Pedaler.*"
+            }
+         ]
+       },
+      {
+          "name":"Cycling - New Bike",
+          "hidden":false,
+          "group":"Goods",
+          "type":"Debit Abnormal",
+          "classifiers":[
+             {
+                "regex":".*Canyon Bicycles.*"
+             },
+            {
+                "regex":".*Urban Pedaler.*",
+                "date":"2025-08-25"
+             }
+         ]
+       },
+       {
+          "name":"Retail General",
+          "hidden":false,
+          "group":"Goods",
+          "classifiers":[
+             {
+                "regex":".*TARGET.*"
+             },
+             {
+               "regex":".*KMARTAUSTRA.*"
+            },
+            {
+               "regex":".*LS BUNGALOW TRADING.*"
+            },
+             {
+                "regex":".*DAVID JONES.*"
+             },
+             {
+               "regex":".*THE AFL STORE.*"
+            },
+            {
+               "regex":".*THE REJECT SHOP .*"
+            },
+             {
+                "regex":".*BIG W.*"
+             },
+             {
+                "regex":"MYER  SOUTHLAND.*"
+             },
+             {
+                "regex":"Mocha Southland.*"
+             },
+             {
+               "regex":".*BEST AND LESS.*"
+             },
+             {
+                "regex":"BRIGHTON SURF CO.*"
+             },
+             {
+                "regex":"MIMCO.*"
+             },
+             {
+                "regex":"KMART.*"
+             },
+             {
+                "regex":"FREEDOM.*"
+             },
+             {
+                "regex":"LULULEMON.*"
+             },
+             {
+                "regex":"EFTPOS MYER.*"
+             },
+             {
+                "regex":"Minimax.*"
+             },
+             {
+                "regex":"H&M AU.*"
+             },
+             {
+                "regex":"MOZI AUST.*"
+             },
+             {
+                "regex":"STUDIO 7 DANCE.*"
+             },
+             {
+                "regex":"SANDRINGHAM ESS HOME.*"
+             },
+             {
+                "regex":".*ABC SHOP.*"
+             },
+             {
+                "regex":".*JB HI FI.*"
+             },
+             {
+               "regex":".*JB HI-FI.*"
+            },
+             {
+                "regex":".*CRATE EXPECTATIONS.*"
+             },
+             {
+                "regex":".*BABY BUNTING.*"
+             },
+             {
+                "regex":".*PARENTHOOD PTY LTD.*"
+             },
+             {
+                "regex":".*RIOT ART & CRAFT.*"
+             },
+             {
+                "regex":".*ADAIRS.*"
+             },
+             {
+                "regex":".*BROLLY SHEETS.*"
+             },
+             {
+                "regex":".*HARVEY NORMAN.*"
+             },
+             {
+                "regex":".*POTTERY BARN.*"
+             },
+             {
+                "regex":".*CHOKOLAT.*"
+             },
+             {
+                "regex":".*BASKETBALL JRSY WORL.*"
+             },
+             {
+                "regex":".*PUMPKIN PATCH.*"
+             },
+             {
+                "regex":".*MYER.*"
+             },
+             {
+                "regex":".*CONVERSE.*"
+             },
+             {
+                "regex":".*ANACONDA.*"
+             },
+             {
+                "regex":".*JB HI FI.*"
+             },
+             {
+                "regex":".*ADIDAS AUSTRALIA.*"
+             },
+             {
+                "regex":".*THE NOOK AT FLINDERS.*"
+             },
+             {
+                "regex":".*BED BATH N TABLE.*"
+             },
+             {
+                "regex":".*LINCRAFT AUSTRALIA.*"
+             },
+             {
+                "regex":".*KIKKIK PTY LTD.*"
+             },
+             {
+                "regex":".*VICTORIAS SECRET.*"
+             },
+             {
+                "regex":".*DAISO.*CHADSTONE.*"
+             },
+             {
+                "regex":"SPOTLIGHT.*"
+             },
+             {
+                "regex":".*THE WOODEN HANGAR.*"
+             },
+             {
+                "regex":".*GUMBOOTS BRIGHTON.*"
+             },
+             {
+                "regex":".*SAVERS AUSTRALIA.*"
+             },
+             {
+                "regex":".*RUNWAY ROOM.*"
+             },
+             {
+                "regex":".*WILD BUGGY.*"
+             },
+             {
+                "regex":".*ARMY SALVOS STORES.*"
+             },
+             {
+                "regex":".*ST VINCENT DE PAUL.*"
+             },
+             {
+                "regex":".*SACRED HEART MISSION.*"
+             },
+             {
+                "regex":".*CRATEEXPECTATIONS.*"
+             },
+             {
+               "regex":".*AMAZON AU.*"
+            },
+            {
+               "regex":".*AMAZON MARKETPLACE.*"
+            },
+            {
+               "regex":".*BUNGALOW TRADING.*"
+            }
+          ]
+       },
+       {
+          "name":"Takeaway",
+          "hidden":false,
+          "group":"Food",
+          "classifiers":[
+             {
+                "regex":".*Royale Bros.*"
+             },
+             {
+                "regex":".*THAI RANI.*"
+             },
+             {
+                "regex":".*IRORI.*"
+             },
+             {
+                "regex":".*FAZIO.*"
+             },
+             {
+               "regex":".*HONEY BOY ASIAN STREET.*"
+            },
+            {
+               "regex":".*A TASTE OF SIAM.*"
+            },
+             {
+               "regex":".*SANDY CHARCOAL CHICKE.*"
+            },
+             {
+                "regex":".*THE ONE THAI.*"
+             },
+             {
+                "regex":".*MARMARIS.*"
+             },
+             {
+                "regex":".*MCDONALDS.*"
+             },
+             {
+               "regex":".*FISH & CHIPS.*"
+            },
+            {
+               "regex":".*CHICKEN LADS.*"
+            },
+             {
+                "regex":"Hiro Sushi Bar.*"
+             },
+             {
+                "regex":".*The Luxe Fish.*"
+             },
+             {
+                "regex":".*BETTYS BURGERS.*"
+             },
+             {
+                "regex":".*BRBLUS PIZZA PASTA.*"
+             },
+             {
+                "regex":".*LITTLE VIETNAM.*"
+             },
+             {
+                "regex":".*OH BANH MI.*"
+             },
+                          {
+                "regex":".*SUSHI HUT.*"
+             },
+             {
+                "regex":"BARBALUS PIZZA.*"
+             },
+             {
+               "regex":".*Sushi Daily.*"
+            },
+             {
+                "regex":".*UBER.*EATS.*"
+             },
+             {
+               "regex":".*GRILLD.*"
+            },
+            {
+               "regex":".*BANH MI.*"
+            },
+             {
+                "regex":".*Z HAO & J YANG.*"
+             },
+             {
+                "regex":".*CHARCOAL CHICKEN.*"
+             },
+             {
+                "regex":".*SMILE BUFFALO.*"
+             },
+             {
+                "regex":".*Flipping Awesome.*"
+             },
+             {
+                "regex":".*SUWAN THAI CUISINE.*"
+             },
+             {
+                "regex":".*ROTI BAR.*"
+             },
+            {
+                "regex":".*Obento.*"
+             },
+                         {
+                "regex":".*YOMG MORDIALLOC.*"
+             },
+                          {
+                "regex":".*Yo-Chi.*"
+             },
+                                       {
+                "regex":".*Rumah Aneka Malaysian.*"
+             },
+             {
+               "regex":".*Bettys Burgers.*"
+            },
+            {
+               "regex":".*RED MS SMTHIS.*"
+            }
+      
+             
+          ]
+       },
+       {
+          "name":"Children",
+          "hidden":false,
+          "group":"Entertainment",
+          "classifiers":[
+             {
+                "regex":".*WIGGLES LIVE.*"
+             },
+             {
+                "regex":".*SENSATIONAL KIDS.*"
+             },
+             {
+               "regex":".*Jump Central.*"
+            },
+             {
+                "regex":".*VICTORIAN ARTS CENTRE.*"
+             },
+             {
+                "regex":"ESSENDON F.*"
+             },
+             {
+               "regex":".*VILLAGECINE.*"
+            },
+             {
+                "regex":".*VILLAGE SOUTHLAND.*"
+             },
+             {
+                "regex":".*JUMP CENTRAL TRAMPOLIN.*"
+             },
+             {
+                "regex":".*ZONE BOWLING.*"
+             },
+             {
+               "regex":".*The NBA Exhibition.*"
+            },
+             {
+               "regex":".*SKATEWORLD.*"
+            }
+          ]
+       },
+       {
+          "name":"Sport",
+          "hidden":false,
+          "group":"Education",
+          "classifiers":[
+             {
+                "regex":".*Sabres Basketball.*"
+             },
+             {
+               "regex":".*McKinnon Cougars.*"
+            },
+            {
+               "regex":".*PLAYHQ.COM.*"
+            },
+             {
+                "regex":".*BRIGHTON SWIM SCHOOL.*"
+             },
+             {
+                "regex":"MCKIMMTENNIS.COM.AU.*"
+             },
+             {
+                "regex":".*CRICKET AUSTRALIA.*"
+             },
+             {
+                "regex":".*MCKIMM TENN.*"
+             },
+             {
+               "regex":".*HOOPSHEAVENAU.*"
+            },
+             {
+               "regex":".*3X3HUSTLE.*"
+            },
+             {
+                "regex":".*SURF LIFE SAVING.*"
+             },
+             {
+                "regex":".*GLITTERY TAPPING.*"
+             },
+             {
+                "regex":".*KINGS SWIM.*"
+             },
+             {
+                "regex":".*SOUTHERN B/BALL.*"
+             },
+             {
+               "regex":".*Southern Basketball.*"
+            },
+             {
+                "regex":".*HIGHETT YOUTH CLUB.*"
+             },
+             {
+                "regex":".*EastSandringhamJFC.*"
+             },
+             {
+                "regex":".*Bullits Registration.*"
+             },
+             {
+                "regex":".*KINGSTON ARTS CENTRE.*"
+             },
+             {
+                "regex":".*AUSTRALIAN SPORTS CAMP.*"
+             },
+             {
+                "regex":".*VIC Auskick.*"
+             },
+             {
+                "regex":".*East Sandringham Junio.*"
+             },
+             {
+               "regex":".*BASKETBALL MENTOR.*"
+            },
+            {
+               "regex":".*MELBOURNE UNITED ALBERT.*"
+            },
+             {
+                "regex":".*SabresBasketball.*"
+             },
+             {
+               "regex":".*MELB UNITED BASKETB.*"
+            },
+             {
+                "regex":".*BullitsRegistratio.*"
+             },
+             {
+                "regex":"STG*BullitsRegistratio.*"
+             },
+             {
+                "regex":".*BrightonWolves.*"
+             },
+             {
+                "regex":".*NAB AFL Auskick.*"
+             },
+             {
+                "regex":".*MCKINNON BASKETBAL.*"
+             },
+             {
+                "regex":".*MCKINNONBBALLCL.*"
+             },
+             {
+               "regex":".*McKinnonBBallClub.*"
+            },
+            {
+               "regex":".*MCKINNON B MOORABBIN.*"
+            },
+            {
+               "regex":".*PLAYHQ\\* BASKETBALL.*"
+            },
+            {
+               "regex":".*HIGHETT YOUTH.*"
+            },
+            {
+               "regex":".*Hoop City.*"
+            },
+            {
+               "regex":".*HOOP CITY.*"
+            },
+            {
+               "regex":".*HOOPSCHOOL.*"
+            },
+            {
+               "regex":".*SAINTS BAS.*"
+            },
+            {
+               "regex":".*NETBALLCONNECT.*"
+            },
+            {
+               "regex":".*TO MCKIMM TENN.*"
+            },
+            {
+               "regex":".*BASKETBALL VICTORIA.*"
+            },
+            {
+               "regex":".*THEATREDELEDANSE.*"
+            },
+            {
+               "regex":".*SBA DOMESTIC COMP.*"
+            },
+            {
+               "regex":".*TO Chantel Graham.*"
+            },
+            {
+               "regex":".*PLAYHQ SPORTS PTY.*"
+            },
+            {
+               "regex":".*816551 TO Scott W.*"
+            },
+            {
+               "regex":".*MINTIES NETBAL.*"
+            },
+            {
+               "regex":".*TO Ben Tessa Boyle.*"
+            },
+            {
+               "regex":".*TO Rachel Arundel.*"
+            },
+            {
+               "regex":".*TO Katherine Sinclair.*"
+            },
+            {
+               "regex":".*TO Katherine Sinclair.*"
+            },
+            {
+               "regex":".*Callaghan Barkley Charge.*"
+            },
+            {
+               "regex":".*NUNAWADING BASKETBAL.*"
+            }
+          ]
+       },
+       {
+          "name":"Credit Card Interest",
+          "hidden":false,
+          "group":"Loans",
+          "classifiers":[
+             {
+                "regex":".*INTEREST CHARGED.*"
+             },
+             {
+                "regex":".*OVERLIMIT FEE.*"
+             }
+          ]
+       },
+       {
+          "name":"Loan Repayment",
+          "hidden":false,
+          "group":"Loans",
+          "classifiers":[
+             {
+                "regex":".*LOAN PAYMENT.*"
+             },
+             {
+                "regex":".*PAYMENT TO ALDERSON BARNABY LUCAS.*",
+                "value_min": 2000
+             },
+             {
+                "regex":".*TO  013483444641829.*     "
+             }
+          ]
+       },
+      {
+          "name":"Salary BA (Payout)",
+          "hidden":false,
+          "group":"Income",
+          "type":"Credit Abnormal",
+          "classifiers":[
+             {
+                "regex":".*PAY/SALARY FROM IRESS.*",
+                "date":"2024-12-06"
+             }
+          ]
+       },
+       {
+          "name":"Salary BA",
+          "hidden":false,
+          "group":"Income",
+          "type":"Credit Normal",
+          "classifiers":[
+             {
+                "regex":".*PAY/SALARY FROM IRESS.*"
+             },
+             {
+               "regex":".*PAY/SALARY FROM FFMA PAYROLL.*"
+             }
+          ]
+       },
+      {
+         "name":"Holiday Spending Help",
+         "hidden":false,
+         "group":"Income",
+         "type":"Credit Abnormal",
+         "classifiers":[
+            {
+              "regex":".*TRANSFER FROM LOVEL HOLIDAY.*",
+              "value": 1500
+            },
+            {
+              "regex":".*PAYMENT FROM J H & P N LOVEL.*",
+              "value": 5000
+            }
+         ]
+      },
+       {
+         "name":"Salary GG",
+         "hidden":false,
+         "group":"Income",
+         "type":"Credit Normal",
+         "classifiers":[
+            {
+              "regex":".*TRANSFER FROM J H LOVEL.*",
+              "value": 4000
+            },
+            {
+               "regex":".*PAY/SALARY FROM MELBOURNE CLINIC PAY.*"
+            }
+         ]
+      },
+       {
+          "name":"Dividend",
+          "hidden":false,
+          "group":"Income",
+          "type":"Credit Abnormal",
+          "classifiers":[
+             {
+                "regex":".*DIVIDEND FROM.*"
+             }
+          ]
+       },
+       {
+          "name":"Medicare Benefit",
+          "hidden":false,
+          "group":"Govt Welfare",
+          "type":"Credit Normal",
+          "classifiers":[
+             {
+                "regex":".*TRANSFER FROM MCARE.*"
+             }
+          ]
+       },
+       {
+         "name":"Car - Service",
+         "hidden":false,
+         "group":"Transport",
+         "type":"Debit Abnormal",
+         "classifiers":[
+            {
+               "regex":".*WORKSHOP AUTO SERVIC.*"
+            },
+            {
+               "regex":".*EB PRESTIGE PTY LTD CLAYTON.*"
+            },
+            {
+               "regex":".*ROVA RANGE AUTOMOTIVE.*"
+            },
+            {
+              "regex":".*NORTH ROAD TYRE AUTO.*"
+           } 
+         ]
+      },
+       {
+          "name":"Running Costs",
+          "hidden":false,
+          "group":"Transport",
+          "classifiers":[
+             {
+                "regex":".*BP BAYSIDE.*"
+             },
+             {
+               "regex":".*LINKT MELBOURNE.*"
+            },
+             {
+                "regex":".*VICROADS REGO.*"
+             },
+             {
+                "regex":".*BP HIGH BLUFF.*"
+             },
+             {
+                "regex":".*CALTEX SAND.*"
+             },
+             {
+                "regex":"CITYLINK.*"
+             },
+             {
+                "regex":"7-ELEVEN 1207.*"
+             },
+             {
+               "regex":"7-ELEVEN 1293.*"
+            },
+             {
+               "regex":"7-ELEVEN 1345.*"
+            },
+            {
+               "regex":"7-ELEVEN 1085.*"
+            },
+             {
+                "regex":".*CRYSTAL CARWASH.*"
+             },
+             {
+               "regex":".*Infinity Hand Carwash.*"
+            },
+             {
+                "regex":".*VICROADS.*"
+             },
+             {
+                "regex":".*CIVIC COMPLIANCE.*"
+             },
+             {
+                "regex":".*BP EXP BRIGHTON.*"
+             },
+             {
+               "regex":".*AMPOL SANDRINGHAM.*"
+             },
+            {
+               "regex":".*WASHWORLD CARWASH.*"
+             },
+             {
+                "regex":".*WASH AND SHOP SOUTHL.*"
+             }
+          ]
+       },
+       {
+          "name":"Gym",
+          "hidden":false,
+          "group":"Health",
+          "classifiers":[
+             {
+                "regex":".*FITNESS FIRST.*"
+             },
+             {
+                "regex":".*EZIDEBIT HEALTHFIT.*"
+             },
+             {
+               "regex":".*Recreation Trck Hampton.*"
+            },
+             {
+                "regex":".*WELL WOMEN.*"
+             },
+             {
+                "regex":".*WEIGHT WATCHERS.*"
+             },
+             {
+                "regex":".*FitnessFirst.*"
+             },
+             {
+                "regex":".*PAYMENT TO RECREATION TRCK.*"
+             }
+          ]
+       },
+       {
+          "name":"Commute",
+          "hidden":false,
+          "group":"Transport",
+          "classifiers":[
+             {
+                "regex":".*MYKI.*"
+             },
+             {
+                "regex":".*PUBLIC TRANSPORT VICT.*"
+             }
+          ]
+       },
+       {
+          "name":"Broadband or Mobile",
+          "hidden":false,
+          "group":"Utilities",
+          "classifiers":[
+             {
+                "regex":".*OPTUS BILLING.*"
+             },
+             {
+               "regex":".*ALDIMOBILE.*"
+            },
+             {
+                "regex":".*PAYMENT TO OPTUS.*"
+             },
+            {
+                "regex":".*MOBILE DIRECT.*"
+             },
+            {
+               "regex":".*AMAYSIM MOBILE.*"
+            }
+          ]
+       },
+       {
+          "name":"Insurance",
+          "hidden":false,
+          "group":"Insurance",
+          "classifiers":[
+             {
+                "regex":".*AAMI.*"
+             },
+            {
+                "regex":".*BUDGET DIRECT.*"
+             },
+             {
+                "regex":".*VIRGIN INSURANCE.*"
+             }
+          ]
+       },
+       {
+          "name":"Gas or Electricity",
+          "hidden":false,
+          "group":"Utilities",
+          "classifiers":[
+             {
+                "regex":".*AGL SALES.*"
+             },
+             {
+                "regex":".*ALINTA ENERGY.*"
+             },
+             {
+                "regex":".*KOGAN ENERGY.*"
+             }
+          ]
+       },
+       {
+          "name":"Online",
+          "hidden":false,
+          "group":"Goods",
+          "classifiers":[
+             {
+                "regex":".*ITUNES.*"
+             },
+             {
+                "regex":".*CATCHOFTHEDAY.*"
+             },
+             {
+                "regex":".*ETERNAL CREATION.*"
+             },
+             {
+                "regex":".*HABITOTS.*"
+             },
+             {
+                "regex":"NATURE BABY.*"
+             },
+             {
+               "regex":"PUMA Australia.*"
+            },
+             {
+                "regex":"AROMA.COM.*"
+             },
+             {
+               "regex":".*PAYPAL \\*EBAY.*"
+            },
+            {
+               "regex":".*PAYPAL \\*WISH.*"
+            }
+            ,
+            {
+               "regex":".*ALIPAYAUSTR.*"
+            }
+            
+          ]
+       },
+       {
+          "name":"Clothing",
+          "hidden":false,
+          "group":"Goods",
+          "classifiers":[
+             {
+                "regex":".*COUNTRY ROAD.*"
+             },
+             {
+                "regex":".*COTTON ON.*"
+             },
+            {
+                "regex":".*DECJUBA.*"
+             },
+             {
+               "regex":".*Citybeach.*"
+            },
+            {
+               "regex":".*KOOKAI.*"
+            },
+             {
+               "regex":".*Cotton On.*"
+            },
+            {
+               "regex":".*ALWAYS ALICE.*"
+            },
+             {
+                "regex":".*ZARA.*"
+             },
+             {
+               "regex":".*PETERALEXAN.*"
+            },
+            {
+               "regex":".*SP PROUD POPPY CLOTH.*"
+            },
+            {
+               "regex":".*SPORTSGIRL.*"
+            },
+             {
+               "regex":".*FRANKIE AND COCO.*"
+            },
+            {
+               "regex":".*GIVV CHADSTONE.*"
+            },
+            {
+               "regex":".*JD SPORTS FASHION.*"
+            },
+            {
+               "regex":".*INDITEX AUSTRALIA.*"
+            },
+             {
+                "regex":".*CR SOUTHLAND.*"
+             },
+             {
+                "regex":".*CR BRIGHTON.*"
+             },
+                          {
+                "regex":".*FEATHER AND NOISE.*"
+             },
+             {
+                "regex":".*SEED.*"
+             },
+             {
+               "regex":".*RETAIL PRODIGY OPS.*"
+            },
+             {
+                "regex":".*MAGIC MOMENTS FOR EVERY.*"
+             },
+             {
+                "regex":"WITCHERY.*"
+             },
+             {
+                "regex":"H AND M AUSTRALIA.*"
+             },
+             {
+                "regex":"MERINO KIDS.*"
+             },
+             {
+                "regex":"CR LONSDALE.*"
+             },
+             {
+                "regex":".*ATHLETES FOOT.*"
+             },
+             {
+               "regex":".*FOOTLOCKERA.*"
+            },
+                         {
+               "regex":".*SUPRE SOUTHLAND.*"
+            },
+            {
+               "regex":".*SUPRE GEELONG.*"
+            },
+                                     {
+               "regex":".*SUSUPERSTORE SOUTHLA.*"
+            },
+            {
+               "regex":".*BARGAIN LAND.*"
+            },
+            {
+               "regex":".*ACTIVE FEET.*"
+            },
+             {
+                "regex":".*SOUL STATION.*"
+             },
+             {
+                "regex":"STANLEYS SHOES.*"
+             },
+             {
+               "regex":".*STEAMBROOK.*"
+            },
+             {
+                "regex":".*HANDYWAY TREE OF LIF.*"
+             },
+             {
+               "regex":".*CULTUREKING.*"
+            },
+             {
+                "regex":"Looksmart Alterations.*"
+             },
+             {
+                "regex":"THE ZIPPER TREE.*"
+             },
+             {
+                "regex":"RETROBUB.*"
+             },
+             {
+                "regex":"KATHMANDU.*"
+             },
+             {
+                "regex":".*THE COACHMAN.*"
+             },
+             {
+                "regex":".*THE FRONT ROOM.*"
+             },
+             {
+                "regex":".*METALICUS.*"
+             },
+             {
+                "regex":".*VINTAGE ROSE FASHION.*"
+             },
+             {
+                "regex":".*DE LUXE LORNE.*"
+             },
+             {
+                "regex":".*OCEANS CLOTHING.*"
+             },
+             {
+                "regex":".*FRANCIS NOLAN SHOE.*"
+             },
+             {
+                "regex":".*SEA GYPSY.*"
+             },
+             {
+                "regex":".*ECO D.*Lorne.*"
+             },
+             {
+                "regex":".*BABES IN THE SHADE.*"
+             },
+             {
+                "regex":".*The Grumpy Swimmer.*"
+             },
+             {
+                "regex":".*MISSPOLLY.*"
+             },
+             {
+                "regex":".*SWIMWEAR GALORE.*"
+             },
+             {
+                "regex":".*SIEN.*BEAUMARIS.*"
+             },
+             {
+                "regex":".*GAZ MAN.*"
+             },
+             {
+               "regex":".*Bonds Outlet.*"
+            },
+            {
+               "regex":".*HM MELBOURNE.*"
+            },
+            {
+               "regex":".*LUCE-ENZ.*"
+            },
+            {
+               "regex":".*BRANDCOLLEC.*"
+            },
+            {
+               "regex":".*BASKETBALL JRSY WRLD.*"
+            },
+            {
+               "regex":".*H&M MELBOURNE.*"
+            },
+            {
+               "regex":".*CINORI.*"
+            },
+         {
+            "regex":".*GORMAN BRIGHTON.*"
+         },
+         {
+            "regex":"ICEBREAKER CLOTHING.*"
+         },
+         {
+            "regex":"ROCK YOUR BABY.*"
+         },
+         {
+            "regex":"BABY BABY ONLINE.*"
+         },
+         {
+            "regex":".*BIRDSNEST PTY.*"
+         },
+         {
+            "regex":".*VINEAPPAREL.*"
+         },
+         {
+            "regex":".*PRICELINE STHLND.*"
+         }
+          ]
+       },
+       {
+          "name":"Hardware",
+          "hidden":false,
+          "group":"Goods",
+          "classifiers":[
+             {
+                "regex":".*BUNNINGS.*"
+             },
+             {
+                "regex":"PARK RD TIMBER.*"
+             }
+          ]
+       },
+       {
+          "name":"Water",
+          "hidden":false,
+          "group":"Utilities",
+          "classifiers":[
+             {
+                "regex":".*SOUTH EAST WATER.*"
+             }
+          ]
+       },
+       {
+          "name":"Health Insurance",
+          "hidden":false,
+          "group":"Health",
+          "classifiers":[
+             {
+                "regex":".*PAYMENT TO GU HEALTH.*"
+             },
+             {
+                "regex":".*PAYMENT TO MEDIBANK PRIVATE.*"
+             },
+             {
+                "regex":".*MEDIBANK PHI DEBIT.*"
+             }
+          ]
+       },
+       {
+          "name":"Adult",
+          "hidden":false,
+          "group":"Entertainment",
+          "classifiers":[
+             {
+                "regex":".*TICKETEK.*"
+             },
+             {
+                "regex":".*TICKETMASTER.*"
+             },
+             {
+                "regex":".*ACV CAPE SCHANCK.*"
+             },
+             {
+                "regex":"TRYBOOKING.COM.*"
+             },
+             {
+                "regex":"TRYBOOKING BRIGHTON GR.*"
+             },
+             {
+               "regex":".*PALACE CINEMAS.*"
+            },
+            {
+               "regex":".*TRYBOOKING.*WHATEVER I ONLINE.*"
+            },
+            {
+               "regex":".*Princess Theatre.*"
+            },
+            {
+               "regex":".*Her Majestys Theatre.*"
+            } 
+          ]
+       },
+       {
+          "name":"HairDresser",
+          "hidden":false,
+          "group":"Services",
+          "classifiers":[
+             {
+                "regex":".*SURIN PTY LTD.*"
+             },
+             {
+                "regex":".*HAIR ON HAMPTON.*"
+             },
+             {
+               "regex":".*MODERN HAIR LOUNGE.*"
+            },
+             {
+                "regex":".*CRISTIQUE HAIR AND BEAUTY.*"
+             },
+             {
+                "regex":".*CANDY HAIR.*"
+             },
+             {
+                "regex":".*LONDON BARBERS.*"
+             },
+             {
+               "regex":".*BARBER SHOP.*"
+            },
+            {
+               "regex":".*HAIR.*Elsternwick.*"
+            },
+            {
+               "regex":".*LUCY FIXED MY HAIR.*"
+            }
+            
+          ]
+       },
+       {
+          "name":"Dining Out",
+          "hidden":false,
+          "group":"Food",
+          "classifiers":[
+             {
+                "regex":".*THE GARDEN OF GOOD AND EV.*"
+             },
+             {
+                "regex":"SANDRINGHAM HOTEL.*"
+             },
+             {
+               "regex":".*Sidebar Sandringham.*"
+            },
+            {
+               "regex":".*THE GRAHAM PUB.*"
+            },
+             {
+                "regex":"PANTRY.*BRIGHTON.*"
+             },
+             {
+               "regex":".*KICHO BLACK ROCK.*"
+            },
+             {
+                "regex":"DANDELION.*"
+             },
+             {
+                "regex":"EFTPOS PANTRY.*"
+             },
+             {
+                "regex":"LAUS FAMILY KITCHEN.*"
+             },
+             {
+                "regex":"REDHILL BREWERY.*"
+             },
+             {
+                "regex":"SOOK SABAI THAI.*"
+             },
+             {
+                "regex":".*IL FORNO.*"
+             },
+            {
+                "regex":".*BOMBAY BY NIGHT.*"
+             },
+            {
+                "regex":".*ZAMBRERO HAMPTON.*"
+             },
+             {
+               "regex":".*SHALIMAR INDIAN.*"
+            },
+            {
+               "regex":".*STOMPING GROUND.*"
+            },
+             {
+                "regex":".*TEN MINUTES BY TRACTOR.*"
+             },
+             {
+                "regex":".*AROMAS NOOSA.*"
+             },
+             {
+                "regex":".*TRACTOR WINE BAR.*"
+             },
+             {
+                "regex":".*Sake Melbourne.*"
+             },
+             {
+                "regex":".*BAY ROAD NURSERY.*"
+             },
+             {
+               "regex":".*BENTLEIGH RSL.*"
+            },
+            {
+               "regex":".*Bacar Restaurant.*"
+            },
+             {
+                "regex":".*A LA GRECQUE.*"
+             },
+            {
+                "regex":".*SONDER BAR.*"
+             },
+            {
+                "regex":".*ALH VENUES/BEACH & BAY RD.*"
+             },
+             {
+                "regex":".*MID VALLEYS RESTAURAN.*"
+             },
+             {
+                "regex":".*Ipsos Restaurant.*"
+             },
+             {
+                "regex":".*PANCAKEPARLOUR.*"
+             },
+             {
+               "regex":".*WEST BEACH BATH PAV.*"
+            },
+             {
+                "regex":".*Canoe Canoe.*"
+             },
+             {
+                "regex":".*Aireys.*Pub.*"
+             },
+             {
+               "regex":".*AIREYSPUB.*"
+            },
+             {
+                "regex":".*UNCLE ST KILDA.*"
+             },
+             {
+                "regex":".*BAD SHEPHERD BREWING .*"
+             },
+             {
+                "regex":".*CAPTAIN MOONLITE .*"
+             },
+             {
+                "regex":".*BAMBOO HOUSE.*"
+             },
+             {
+                "regex":"POCIS OF HAMPTON.*"
+             },
+             {
+                "regex":".*Hot Lips Hacienda.*"
+             },
+             {
+                "regex":".*Stokehouse.*"
+             },
+            {
+                "regex":".*LUCKY 13 GARAGE.*"
+             },
+             {
+                "regex":".*Baia Di Vino.*"
+             },
+             {
+                "regex":".*La Cabra Hampton.*"
+             },
+             {
+               "regex":".*SUPER NORMAL.*"
+             },
+             {
+               "regex":".*THE PANCAKE PARLOUR.*"
+             },
+             {
+               "regex":".*TACO BILL.*"
+             },
+             {
+               "regex":".*DAVIDS PRAHRAN.*"
+             },
+             {
+               "regex":".*Honey Boy.*"
+             },
+             {
+               "regex":".*Chinta Ria.*"
+             },
+            {
+               "regex":".*The Clare Castle.*"
+             },
+            {
+               "regex":".*CHIKI CHAN & HIKI BAR.*"
+             },
+             {
+               "regex":".*Hanoi Hannah.*"
+             }
+
+             
+          ]
+       },
+       {
+          "name":"Withdrawal",
+          "hidden":false,
+          "group":"Cash",
+          "classifiers":[
+             {
+                "regex":"NON-ANZ ATM.*"
+             },
+             {
+                "regex":"ANZ ATM.*"
+             },
+             {
+                "regex":"CARD ENTRY AT.*"
+             },
+             {
+                "regex":"CASH ADVANCE.*"
+             }
+          ]
+       },
+       {
+          "name":"Share Sale",
+          "hidden":false,
+          "group":"Income",
+          "type":"Credit Abnormal",
+          "classifiers":[
+             {
+                "regex":".*TRANSFER FROM COMMONWEALTH SEC.*"
+             },
+             {
+               "regex":".*TRANSFER FROM SYD SCHEME PYMT.*"
+            },
+            {
+               "regex":".*FROM CPU PLAN MANAGER ITIRE.*"
+            },
+            {
+               "regex":".*FROM CPUSHAREPLANSPTYLTD.*"
+            },
+            {
+               "regex":".*CITIBANK EUROPE CPU SHARE PLANS.*"
+            }
+          ]
+       },
+       {
+          "name":"Family Benefit",
+          "hidden":false,
+          "group":"Govt Welfare",
+          "classifiers":[
+             {
+                "regex":".*FAMILY PAYMENT FROM AUS GOV.*"
+             }
+          ]
+       },
+       {
+          "name":"Council Rates",
+          "hidden":false,
+          "group":"Utilities",
+          "classifiers":[
+             {
+                "regex":".*BAYSIDE CITY COUN.*"
+             }
+          ]
+       },
+       {
+          "name":"Misc Debit",
+          "hidden":false,
+          "group":"Misc Debit",
+          "classifiers":[
+             {
+                "regex":"MCC.*"
+             }
+          ]
+       },
+       {
+          "name":"Tax Payment",
+          "hidden":false,
+          "group":"Tax",
+          "type":"Debit Abnormal",
+          "classifiers":[
+             {
+                "regex":".*TAX OFFICE PAYMENT.*"
+             }
+          ]
+       },
+       {
+          "name":"Investment - Shares",
+          "hidden":false,
+          "group":"Investment",
+          "type":"Debit Abnormal",
+          "classifiers":[
+             {
+                "regex":".*ANZ INTERNET BANKING BPAY NAB RETAIL.*"
+             },
+             {
+               "regex":".*PAYMENT TO ALDERSON BARNABY LUCAS.*",
+               "date":"2022-06-21"
+             },
+             {
+               "regex":".*PAYMENT TO ALDERSON BARNABY LUCAS.*",
+               "value_max": 2000
+             },
+             {
+               "regex":".*IRESS LTD SPP.*"
+             },
+             {
+               "regex":".*TO 013483444641829.*",
+               "date":"2022-11-14"
+             }
+          ]
+       },
+       {
+          "name":"Tax Agent",
+          "hidden":false,
+          "group":"Services",
+          "classifiers":[
+             {
+                "regex":"ANDERSON ASSOCIATES.*"
+             },
+             {
+                "regex":".*ANDERSON ASSOCIAT.*"
+             },
+             {
+                "regex":".*ANDERSON & ASSOC.*"
+             },
+             {
+                "regex":".*ANDERSON ASSOC.*"
+             }
+          ]
+       },
+              {
+          "name":"Holiday EU",
+          "hidden":false,
+          "group":"Holiday",
+          "type":"Debit Abnormal",
+          "classifiers":[
+            {
+               "regex":".*UBER.*EUR.*"
+            },
+            {
+               "regex":".*UBER.*GBP.*"
+            },
+            {
+               "regex":".*GBP.*AUD.*"
+            },
+            {
+               "regex":".*GetYourGuide.*"
+            },
+            {
+               "regex":".*EUR.*AUD.*"
+            },
+            {
+               "regex":".*TO Wise Australia.*"
+            },
+            {
+               "regex":".*SP SIMSDIRECT.*"
+            },
+            {
+               "regex":".*POLIGNANO.*"
+            },
+            {
+               "regex":".*EASYJET.*"
+            },
+            {
+               "regex":".*AIRBNB.*"
+            },
+            {
+               "regex":".*OMIO AUD BERLIN.*"
+            },
+            {
+               "regex":".*EURO DISNEY CHESSY.*"
+            },
+            {
+               "regex":".*stasher.com.*"
+            }
+          ]
+       },
+       {
+          "name":"Yearly",
+          "hidden":false,
+          "group":"Holiday",
+          "type":"Debit Abnormal",
+          "classifiers":[
+             {
+                "regex":"VIRGIN AUST.*"
+             },
+             {
+               "regex":"JETSTAR.*"
+             },
+             {
+               "regex":"VRBO HA8PTHTF 61290567003.*"
+             },
+             {
+                "regex":"SYDNEY OPERA HOUSE.*"
+             },
+             {
+               "regex":".*MAJESTIC M SUITES.*"
+            },
+            {
+               "regex":".*MAY PARK MOTOR LODGE.*"
+            },
+            {
+               "regex":".*CALEDONIAN INN.*"
+            },
+            {
+               "regex":".*NORTH ADELAID.*"
+            },
+             {
+               "regex":"CrownMetropolMelbourne.*"
+            },
+             {
+                "regex":"AMOMA.COM.*"
+             },
+             {
+               "regex":".*Inverloch.*"
+            },
+            {
+               "regex":".*INVERLOCH.*"
+            },
+             {
+                "regex":".*EMERALD NOOSA RESORT.*"
+             },
+             {
+               "regex":".*GLENELG.*"
+            },
+            {
+               "regex":".*FRANKLIN CENTRAL APR ADELAIDE.*"
+            },
+            {
+               "regex":".*HENLEY BEACH.*"
+            },
+            {
+               "regex":".*MOUNT GAMBIER.*"
+            },
+            {
+               "regex":".*WEST BEACH.*"
+            },
+             {
+               "regex":".*Portside Sydney.*"
+             },
+             {
+               "regex":".*ARTISANS NEST BON Bondi.*"
+             },
+             {
+               "regex":".*GM CABS PTY LTD MASCOT.*"
+             },
+             {
+                "regex":".*Great Ocean Road Real.*"
+             },
+             {
+               "regex":".*Great Ocean Road Accom.*"
+            },
+            {
+               "regex":".*SOUTHERN CROSS ATRIUM CAIRNS.*"
+            },
+            {
+               "regex":".*PORT FAIRY.*"
+            },
+            {
+               "regex":".*PORT DOUGLAS.*"
+            },
+            {
+               "regex":".*MELBOURNE AIRPORT.*"
+            },
+            {
+               "regex":".*HYATT REGENCY.*"
+            },
+            {
+               "regex":".*FANTASEA.*"
+            },
+            {
+               "regex":".*HARTLEYS CROCODILE.*"
+            },
+            {
+               "regex":".*SOPA QUEST PTY LTD.*"
+            },
+            {
+               "regex":".*SP FIBA WOMENS WORLD C.*"
+            },
+            {
+               "regex":".*UBER.*TRIP.*SYDNEY.*"
+            },
+            {
+               "regex":".*TRACKSIDE CONVENIENC SYDNEY.*"
+            },
+            {
+               "regex":".*Booking.com.*"
+            },
+            {
+               "regex":".*BUDGET RENT A CAR.*"
+            },
+            {
+               "regex":".*Trinity Beach.*"
+            },
+            {
+               "regex":".*PALM COVE.*"
+            }
+          ]
+       },
+       {
+          "name":"Present - Family",
+          "hidden":false,
+          "group":"Goods",
+          "classifiers":[
+             {
+                "regex":"TINA LEONARD.*"
+             },
+             {
+                "regex":"RAP PRODUCTS.*"
+             },
+             {
+                "regex":"GIANT BICYCLE.*"
+             },
+             {
+                "regex":".*LOVE IT.*"
+             },
+             {
+                "regex":".*BEAU PHOTOS.*"
+             },
+             {
+               "regex":".*NORDACIOUS.*"
+             },
+             {
+               "regex":".*BACKYARD BOTANIST CLIFTON HILL.*"
+             },
+             {
+               "regex":".*THE CUPCAKE QUEENS.*"
+             },
+             {
+               "regex":".*Flavours Patisserie.*"
+             },
+             {
+               "regex":".*Flavours Patisserie.*"
+             },
+             {
+               "regex":".*Keiths Homemade Cakes.*"
+             },
+             {
+                "regex":".*Wild Holly Cakes.*"
+             }
+          ]
+       },
+       {
+          "name":"Bank Fee",
+          "hidden":false,
+          "group":"Misc Debit",
+          "classifiers":[
+             {
+                "regex":"ANZ BREAKFREE PACKAGE.*"
+             },
+             {
+                "regex":".*ANNUAL FEE.*"
+             },
+             {
+                "regex":".*REWARD PROGRAM FEE.*"
+             },
+             {
+               "regex":".*ACCOUNT SERVICING FEE.*"
+            },
+             {
+                "regex":".*FEE REDIRECTED FROM.*"
+             }
+          ]
+       },
+       {
+         "name":"Credit Card",
+         "hidden": false,
+         "group":"Loans",
+         "type":"Debit Abnormal",
+         "classifiers":[
+            {
+               "regex":".*TO 4564680119289568.*"
+            },
+            {
+               "regex":".*TO 4564XXXXXXXX9568.*"
+            },
+            {
+               "regex":".*TO 4564XXXXXXXX0227.*"
+            },
+            {
+               "regex":".*TO 4564XXXXXXXX2225.*"
+            },
+            {
+               "regex":".*TO 4564680117952225.*"
+            },
+            {
+               "regex":".*TO 4564680028610227.*"
+            },
+            {
+               "regex":".*013483533773727.*"
+            },
+            {
+               "regex":".*TO 4564680116309401.*"
+            },
+            {
+               "regex":".*TO 4564680026738855.*"
+            },
+            {
+               "regex":".*TO 4564680116778548.*"
+            },
+            {
+               "regex":".*TO 4564680111537915.*"
+            },
+            {
+               "regex":".*TO 4564680022096381.*"
+            },
+            {
+               "regex":".*TO 45094992470142951.*"
+            },
+            {
+               "regex":".*XXXXXPAYMENT THANKYOU.*"
+            }
+         ]
+      },
+             {
+          "name":"Pets - Abnormal",
+          "hidden":false,
+          "group":"Services",
+          "type":"Debit Abnormal",
+          "classifiers":[
+             {
+                "regex":".*HAMPTON VETERINARY.*",
+                "date":"2025-08-11"
+             }
+          ]
+       },
+       {
+          "name":"Pets",
+          "hidden":false,
+          "group":"Services",
+          "classifiers":[
+             {
+                "regex":".*Naturally Stylin.*"
+             },
+             {
+                "regex":"JO2 PTY LTD.*"
+             },
+             {
+                "regex":".*BAYSIDE CC ANIMAL.*"
+             },
+             {
+                "regex":".*CHISFLAX.*"
+             },
+             {
+                "regex":".*MORNINGTON LODGE.*"
+             },
+             {
+                "regex":".*EFTPOS NATURALLY STYL.*"
+             },
+             {
+                "regex":".*DIRTY DOGS PET.*"
+             },
+             {
+               "regex":".*EVERYDAY PET INSURANC.*"
+            },
+             {
+                "regex":".*BAYSIDE CC ANIMALR.*"
+             },
+             {
+                "regex":"PETS DOMAIN.*"
+             },
+            {
+                "regex":"Mazs Dog Walkin.*"
+             },
+             {
+               "regex":".*PETS Hampton.*"
+            },
+             {
+               "regex":".*PETBARN.*"
+             },
+             {
+               "regex":".*BAYSIDE DOG GROOM.*"
+             },
+             {
+                "regex":".*HAMPTON VETERINARY.*"
+             },
+             {
+                "regex":".*BUDGETPETPRODU.*"
+             },
+             {
+               "regex":".*PET INSURANCE.*"
+            },
+            {
+               "regex":".*MOORBN OBD DG CLB.*"
+            },
+            {
+               "regex":".*SANDRINGHAM VET HOSP.*"
+            }
+          ]
+       },
+       {
+          "name":"Primary School",
+          "hidden":false,
+          "group":"Education",
+          "classifiers":[
+             {
+                "regex":".*SANDRINGHAM PRIMARY.*"
+             },
+             {
+                "regex":"G A T E WAYS.*"
+             },
+             {
+                "regex":"SCHOLASTIC AUSTRALIA.*"
+             },
+             {
+                "regex":"ADVANCED LIFE.*QUEENSCLIFF.*"
+             },
+             {
+                "regex":".*GRANGEROADKINDERASSI.*"
+             },
+             {
+                "regex":".*CAMPION EDUCATION.*"
+             },
+             {
+               "regex":".*TO Ambitions Tutoring.*"
+            },
+            {
+               "regex":".*FLEXISCHOOL.*"
+            },
+            {
+               "regex":".*Scholastic Australia.*"
+            },
+            {
+               "regex":".*LEARNING WITH TECH.*"
+            }
+          ]
+       },
+       {
+          "name":"Charity",
+          "hidden":false,
+          "group":"Misc Debit",
+          "classifiers":[
+             {
+                "regex":".*GOOD FRIDAY APPEAL.*"
+             },
+             {
+                "regex":".*THE RCD FUND PTY LTD.*"
+             }
+             ,
+             {
+               "regex":".*MITOCHARITY.*"
+            }
+              
+          ]
+       },
+       {
+         "name":"Misc Credit",
+         "hidden":false,
+         "group":"Misc Credit",
+         "type":"Credit Normal",
+         "classifiers":[
+            {
+               "regex":".*TRANSFER FROM LUCY BOTTERILL.*"
+            },
+            {
+               "regex":".*PAYMENT FROM STEFANIE GILLIS.*"
+            },
+            {
+               "regex":".*PAYMENT FROM MISS ANTHEA JULIA KANE.*"
+            },
+            {
+               "regex":".*TRANSFER FROM FRANCES WANG.*"
+            },
+            {
+               "regex":".*PAYMENT FROM MR ROBERT QUINEY.*"
+            },
+            {
+               "regex":".*TRANSFER FROM KATE F DENSLEY.*"
+            },
+            {
+               "regex":".*TRANSFER FROM PAWEL BUCKI.*"
+            },
+            {
+               "regex":".*PAYMENT FROM MR GREGORY PETER.*"
+            },
+            {
+               "regex":".*PAYMENT FROM Rowena Kelly.*"
+            },
+            {
+               "regex":".*PAYMENT FROM MRS NATALIE GATTUSO.*"
+            },
+            {
+               "regex":".*TRANSFER FROM LEIGH PETSCHEL.*"
+            },
+            {
+               "regex":".*TRANSFER FROM GREGORY IRELAND.*"
+            },
+            {
+               "regex":".*RANSFER FROM KATHERINE SEEMAN.*"
+            },
+            {
+               "regex":".*TRANSFER FROM RICHARD OSLER.*"
+            },
+            {
+               "regex":".*TRANSFER FROM LAUREN VAN HOOS.*"
+            }
+            ,
+            {
+               "regex":".*PAYMENT FROM MR CHAU.*"
+            },
+            {
+               "regex":".*PAYMENT FROM MRS JACQUELINE.*"
+            }
+            ,
+            {
+               "regex":".*TRANSFER FROM CASHBACK VICTORIAN DINING.*"
+            }
+            ,
+            {
+               "regex":".*JEMCOUGARS.*"
+            }
+            ,
+            {
+               "regex":".*COUGARSJEM.*"
+            }
+         ]
+      },
+       {
+          "name":"Drafting",
+          "hidden":false,
+          "group":"Renovation",
+          "classifiers":[
+             {
+                "regex":".*FINELINEBUILDING.*"
+             },
+            {
+                "regex":".*TO FINELI.*"
+             }
+          ]
+       },
+       {
+          "name":"Cafe",
+          "hidden":false,
+          "group":"Food",
+          "classifiers":[
+             {
+                "regex":"PAGE 8.*"
+             },
+             {
+               "regex":".*CAFE.*"
+             },
+             {
+               "regex":".*Cafe.*"
+             },
+             {
+               "regex":".*Red Moose.*"
+             },
+             {
+               "regex":".*AXIL COFFEE.*"
+             },
+            {
+               "regex":".*THE ESPRESSO ROOM.*"
+             },
+             {
+                "regex":".*THE LITTLE ELEPHAN.*"
+             },
+             {
+                "regex":".*LARSEN & CO.*"
+             },
+             {
+                "regex":".*SEBASTIANS FOOD AND WI.*"
+             },
+             {
+                "regex":".*Bomboras Torquay.*"
+             },
+             {
+                "regex":".*CAFENATICS EQUITABLE.*"
+             },
+             {
+                "regex":".*CORNER & BENCH.*"
+             },
+             {
+                "regex":".*CAFETERIA 362.*"
+             },
+             {
+               "regex":".*CAFETERIA Black Rock.*"
+            },
+             {
+                "regex":".*OLI & LEV.*"
+             },
+             {
+                "regex":".*FOX IN THE KITCHEN.*"
+             },
+             {
+                "regex":".*Stevie.*Sandringham.*"
+             },
+             {
+                "regex":".*Eclair Boulangerie.*"
+             },
+             {
+                "regex":".*KINGS COFFEE AND.*"
+             },
+             {
+                "regex":".*Bomboras Kiosk.*"
+             },
+             {
+                "regex":".*Cabin Coffee.*"
+             },
+             {
+               "regex":".*Paperboy Coffee.*"
+            },
+             {
+                "regex":".*Port of Call Eatery.*"
+             },
+             {
+                "regex":".*HENG HONG TAING.*"
+             },
+             {
+               "regex":".*CORNERSTONE & CO.*"
+             }, 
+             {
+               "regex":".* OUR LITTLE RAY OF SU.*"
+             }, 
+             {
+               "regex":"Limoncello.*"
+             },            
+             {
+               "regex":".*LIMONCELLO.*"
+             },
+             {
+               "regex":".*SHAKES.*Hampton.*"
+             },
+             {
+               "regex":".*The Little Elephant.*"
+             },
+             {
+               "regex":".*LANEWAY 73.*"
+             },
+            {
+               "regex":".*STEVIE SANDRINGHAM.*"
+             },
+             {
+               "regex":".*Cafe Sana.*"
+             },
+             {
+               "regex":".*Bearded Brothers.*"
+             },
+             {
+               "regex":".*BOOST JUICE.*"
+             },
+             {
+               "regex":".*BoostJuice.*"
+             },
+             {
+               "regex":".*SOULHAPPY PTY LTD.*"
+             },
+             {
+               "regex":".*BOSSY BOOTS.*"
+             }   
+          ]
+       },
+       {
+          "name":"Newsagent",
+          "hidden":false,
+          "group":"Goods",
+          "classifiers":[
+             {
+                "regex":"HAMPTON AUTH NEWS.*"
+             },
+             {
+                "regex":".*SANDRINGHAM NEWS.*"
+             },
+             {
+               "regex":".*BRIGHTON NEWS.*"
+            },
+            {
+               "regex":".*SANDRINGHAM NWS LOT.*"
+            },
+            {
+               "regex":".*FAIRFAX MEDIA GROUP.*"
+            },
+            {
+               "regex":".*NEWSLIMITED.*"
+            },
+            {
+               "regex":".*Anglesea News & Lotto.*"
+            },
+            {
+               "regex":".*POST HAMPTON.*"
+            }
+          ]
+       },
+       {
+          "name":"Repair",
+          "hidden":false,
+          "group":"Services",
+          "classifiers":[
+             {
+                "regex":".*ASKO APPLIANCESAUST.*"
+             },
+             {
+                "regex":".*TO GASSAFEAU.*"
+             }
+          ]
+       },
+      {
+          "name":"Cleaning",
+          "hidden":false,
+          "group":"Services",
+          "classifiers":[
+             {
+                "regex":".*SANDRINGHAM DRY.*"
+             }
+          ]
+       },
+       {
+          "name":"Interior Designer",
+          "hidden":false,
+          "group":"Renovation",
+          "classifiers":[
+             {
+                "regex":".*PENNY JUNE.*"
+             }
+          ]
+       },
+       {
+          "name":"Present - Other",
+          "hidden":false,
+          "group":"Goods",
+          "classifiers":[
+             {
+                "regex":".*DAVIES AND SON.*"
+             },
+             {
+                "regex":".*T2 - SOUTHLAND.*"
+             },
+             {
+                "regex":".*NO PLACE LIKE HOME A HOME.*"
+             },
+             {
+                "regex":".*CRATE EXPECTATIONS.*"
+             },
+             {
+               "regex":".*Etsy.com.*"
+            },
+             {
+               "regex":".*TheSuperCool.*"
+            },
+            {
+               "regex":".*Seed Brighton.*"
+            },
+            {
+               "regex":".*Seed Heritage.*"
+            },
+            {
+               "regex":".*HANDWORKS.*"
+            },
+            {
+               "regex":".*BUCKETS AND SPADES.*"
+            }
+          ]
+       },
+       {
+          "name":"Rent",
+          "hidden":false,
+          "group":"Renovation",
+          "type":"Debit Abnormal",
+          "classifiers":[
+             {
+                "regex":".*PAYMENT TO DEFT PAYMENTS.*"
+             }
+          ]
+       },
+       {
+         "name":"Goods Abnormal",
+         "hidden":false,
+         "group":"Goods",
+         "type":"Debit Abnormal",
+         "classifiers":[
+            {
+               "regex":".*TO KADourley.*"
+            }
+         ]
+      },
+       {
+          "name":"Build",
+          "hidden":false,
+          "group":"Renovation",
+          "type":"Debit Abnormal",
+          "classifiers":[
+             {
+                "regex":".*TRECON GRO.*"
+             }
+          ]
+       },
+       {
+          "name":"Extracurricular",
+          "hidden":false,
+          "group":"Education",
+          "classifiers":[
+             {
+                "regex":".*RON LEIGHS MUSIC.*"
+             },
+             {
+               "regex":".*MUSIC MELODIES.*"
+             },
+             {
+               "regex":".*STEPPES.*"
+             },
+             {
+                "regex":".*ENERGETIKS.*"
+             },
+             {
+                "regex":".*Monash Performing Arts.*"
+             },
+             {
+               "regex":".*Blake eLearning.*"
+            },
+             {
+               "regex":".*SHINE TRIMMINGS AND PORT.*"
+             }
+          ]
+       },
+       {
+          "name":"Moving",
+          "hidden":false,
+          "group":"Renovation",
+          "type":"Debit Abnormal",
+          "classifiers":[
+             {
+                "regex":".*BROWN PAPER PACKAGIN.*"
+             }
+          ]
+       },
+       {
+          "name":"Cosmetics",
+          "hidden":false,
+          "group":"Goods",
+          "classifiers":[
+             {
+                "regex":".*Mecca.*"
+             },
+             {
+                "regex":".*HAIRHOUSE WAREHOUSE.*"
+             },
+             {
+                "regex":".*PASSION NAILS AND BE.*"
+             },
+             {
+               "regex":".*BEAUMARIS NAILS.*"
+            },
+             {
+                "regex":".*SANDRINGHAM NAILS SP.*"
+             },
+             {
+               "regex":".*ETERNITY NAILS.*"
+            }
+          ]
+       },
+       {
+          "name":"Electronic",
+          "hidden":false,
+          "group":"Goods",
+          "classifiers":[
+             {
+                "regex":".*LANDMARK COMPUTERS.*"
+             },
+             {
+               "regex":".*Games World.*"
+            },
+             {
+                "regex":".*EB GAMES.*"
+             }
+          ]
+       },
+       {
+          "name":"Florist",
+          "hidden":false,
+          "group":"Goods",
+          "classifiers":[
+             {
+                "regex":".*SIMPLY FLOWERS.*"
+             },
+             {
+                "regex":".*BRIGHTON FLOWERS.*"
+             },
+             {
+                "regex":".*FLORIST.*"
+             },
+             {
+                "regex":".*FRESCO HOUSE FLOWERS.*"
+             },
+             {
+               "regex":".*DAVID KONG AND SOW.*"
+            },
+             {
+                "regex":".*ADAM THE FLOWER.*"
+             }
+          ]
+       },
+       {
+          "name":"Sports",
+          "hidden":false,
+          "group":"Goods",
+          "classifiers":[
+             {
+                "regex":".*REBEL.*"
+             },
+             {
+               "regex":".*SPORTSMART.*"
+            },
+            {
+               "regex":".*SURF AIREYS INLET.*"
+            }
+
+           
+          ]
+       },
+       {
+          "name":"Pool",
+          "hidden":false,
+          "group":"Utilities",
+          "classifiers":[
+             {
+                "regex":".*POOLWERX.*"
+             }
+          ]
+       },
+       {
+          "name":"Kids - Guitar",
+          "hidden":false,
+          "group":"Education",
+          "classifiers":[
+             {
+                "regex":".*EMMA YARO.*"
+             }
+          ]
+       },
+       {
+          "name":"Dentist",
+          "hidden":false,
+          "group":"Health",
+          "classifiers":[
+             {
+                "regex":".*MARTIN STREET DENTISTS.*"
+             },
+             {
+               "regex":".*MOORABBIN DENTAL.*"
+            },
+            {
+               "regex":".*NDC SERVICE CO PTY.*"
+            },
+            {
+               "regex" : ".*TIMOTHY JASON NICHOLLS.*"
+            }
+          ]
+       },
+       {
+          "name":"Kids Clothing",
+          "hidden":false,
+          "group":"Goods",
+          "classifiers":[
+             {
+                "regex":".*LITTLE DARCY.*"
+             },
+             {
+                "regex":".*TAF SOUTHLAND.*"
+             },
+             {
+               "regex":".*BBALLJERSEY WORLD.*"
+            },
+             {
+               "regex":".*VANS MOORABBIN .*"
+            }
+          ]
+       },
+      {
+          "name":"Baxter Misc",
+          "hidden":false,
+          "group":"Goods",
+          "classifiers":[
+            {
+                "regex":".*SCHOOLIES.COM.*"
+             },
+            {
+                "regex":".*VICTORIA RACING CLUB.*"
+             }
+          ]
+       },
+       {
+          "name":"Family Birthday",
+          "hidden":false,
+          "group":"Goods",
+          "classifiers":[
+             {
+                "regex":".*LOMBARD MOORABBIN.*"
+             },
+             {
+               "regex":".*JD VARIETY CENTRE.*"
+             }
+          ]
+       },
+       {
+          "name":"Private School",
+          "hidden":false,
+          "type":"Debit Abnormal",
+          "group":"Education",
+          "classifiers":[
+             {
+                "regex":".*BRIGHTON GRAMMAR.*"
+             },
+             {
+               "regex":".*BRIGHTONGRAMMA.*"
+            },
+            {
+               "regex":".*MENTONE GRAMMA.*"
+            },
+            {
+               "regex":".*MELIORA CLUB.*"
+            },
+             {
+                "regex":".*NOONE IMAGEWEAR.*"
+             },
+             {
+               "regex":".*SPARTANSS.*"
+            },
+            {
+               "regex":".*BRIGHTONGR ONLINE PURCHA.*"
+            },
+            {
+               "regex":".*MENTONE4 GRAMMAR SCHOO.*"
+            },
+            {
+               "regex":".*OUTSPORTS PTY LTD.*"
+            },
+            {
+               "regex":".*HARRIS SCARFE.*"
+            }
+          ]
+       },
+       {
+         "name":"Tech Subscriptions",
+         "hidden":false,
+         "group":"Services",
+         "classifiers":[
+            {
+               "regex":".*AVIRA.*"
+            },
+            {
+               "regex":".*AMZNPRIMEAU.*"
+            },
+            {
+               "regex":".*APPLE.COM/BILL.*"
+            },
+            {
+               "regex":".*QUSTODIOTEC.*"
+            },
+            {
+               "regex":".*Audible Australia.*"
+            },
+            {
+               "regex":".*Audible Limited.*"
+            },
+            {
+               "regex":".*STREAMOTION .*"
+            },
+            {
+               "regex":".*NETFLIX.*"
+            },
+            {
+               "regex":".*GOOGLE YOUTUBE.*"
+            },
+            {
+               "regex":".*YOUTUBEPREMIUM.*"
+            },
+            {
+               "regex":".*NEWS PTY LIMITED.*"
+            },
+            {
+               "regex":".*FAIRFAXMEDI.*"
+            },
+            {
+               "regex":".*MICROSOFT XBOX.*"
+            },
+            {
+               "regex":".*SPOTIFY.*"
+            },
+            {
+               "regex":".*PARAMOUNT + PYRMONT.*"
+            },
+            {
+               "regex":".*NBA LG PASS.*"
+            },
+            {
+               "regex":".*HUBBL - BINGE.*"
+            },
+            {
+               "regex":".*HBO MAX.*"
+            },
+            {
+               "regex":".*Disney Plus.*"
+            },
+            {
+               "regex":".*DISNEYPLUS.*"
+            },
+            {
+               "regex":".*KAYO SPORTS.*"
+            }
+
+         ]
+      },
+      {
+         "name":"Business Development",
+         "hidden":false,
+         "group":"Goods",
+         "classifiers":[
+            {
+               "regex":".*REDDIT INC.*"
+            },
+            {
+               "regex":".*CONTABO.*"
+            }
+         ]
+      },
+       {
+          "name":"Home Office",
+          "hidden":false,
+          "group":"Goods",
+          "classifiers":[
+             {
+                "regex":".*OFFICEWORKS.*"
+             }
+          ]
+       },
+       {
+         "name":"Work - Lunch",
+         "hidden":false,
+         "group":"Goods",
+         "classifiers":[
+            {
+               "regex":".*SAMS FRIENDLY GROCER.*"
+            },
+            {
+               "regex":".*SUSHI HUB GALLERIA.*"
+            },
+            {
+               "regex":".*VENDATREAT.*"
+            }
+         ]
+      },
+       {
+         "name":"Home Office - Subscriptions",
+         "hidden":false,
+         "group":"Goods",
+         "classifiers":[
+            {
+               "regex":".*ADOBE CREATIVE CLOUD.*"
+            },
+            {
+               "regex":".*iStock.com.*"
+            },
+            {
+               "regex":".*Adobe.*"
+            },
+            {
+              "regex":".*WWW.ISTOCK.COM.*"
+           },
+            {
+               "regex":".*Adobe Systems.*"
+            },
+            {
+              "regex":".*VISTAPRINT.*"
+           }, 
+            {
+              "regex":".*ADOBE STOCK.*"
+           }
+         ]
+      },
+       {
+          "name":"Baxter",
+          "hidden":false,
+          "group":"Cash",
+          "classifiers":[
+             {
+                "regex":".*PAYMENT TO SPRIGGY.*"
+             },
+             {
+               "regex":".*APEX MINEC.*"
+            }
+          ]
+       },
+       {
+          "name":"Jewellery",
+          "hidden":false,
+          "group":"Goods",
+          "classifiers":[
+             {
+                "regex":".*LOVISA.*"
+             },
+             {
+                "regex":".*PANDORA.*"
+             },
+                          {
+                "regex":".*HARLI AND HARPA .*"
+             },
+             {
+               "regex":".*Ruby and Sky.*"
+            }
+          ]
+       }
+    ]
+ }

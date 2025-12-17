@@ -1,0 +1,14 @@
+[run]
+branch = true
+source = .
+omit =
+    # omit anything in a .local directory anywhere
+    */.local/*
+    # Omit any test files
+    */*_test.py
+    */main.py
+    */__main__.py
+    */__init__.py
+
+[xml]
+output = ./coverage.xml

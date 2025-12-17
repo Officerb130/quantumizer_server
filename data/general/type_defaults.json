@@ -1,0 +1,20 @@
+{
+    "type":[
+      {
+          "name":"Debit Normal",
+          "hidden":false
+      },
+      {
+         "name":"Credit Normal",
+         "hidden":false
+      },
+      {
+         "name":"Debit Abnormal",
+         "hidden":true
+      },
+      {
+         "name":"Credit Abnormal",
+         "hidden":true
+      }
+    ]
+ }

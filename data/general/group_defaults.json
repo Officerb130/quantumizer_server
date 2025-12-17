@@ -1,0 +1,25 @@
+{
+    "group": [
+        { "name" : "Undefined Credit", "hidden" : false },
+        { "name" : "Undefined Debit", "hidden" : false },
+        { "name" : "Food", "hidden" : false },
+        { "name" : "Health", "hidden" : false },
+        { "name" : "Goods", "hidden" : false },
+        { "name" : "Services", "hidden" : false },
+        { "name" : "Entertainment", "hidden" : false },
+        { "name" : "Education", "hidden" : false },
+        { "name" : "Loans", "hidden" : false },
+        { "name" : "Income", "hidden" : false },
+        { "name" : "Govt Welfare", "hidden" : false },
+        { "name" : "Transport", "hidden" : false },
+        { "name" : "Utilities", "hidden" : false },
+        { "name" : "Insurance", "hidden" : false },
+        { "name" : "Cash", "hidden" : false },
+        { "name" : "Misc Debit", "hidden" : false },
+        { "name" : "Misc Credit", "hidden" : false },
+        { "name" : "Tax", "hidden" : false },
+        { "name" : "Investment", "hidden" : false },
+        { "name" : "Holiday", "hidden" : false },
+        { "name" : "Renovation", "hidden" : false }
+    ]
+}

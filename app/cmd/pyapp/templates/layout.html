@@ -1,0 +1,196 @@
+<html>
+    <head>
+          <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <title>Quantumizer</title>
+        
+        <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css"> -->
+        <link rel="stylesheet" href="./static/bootstrap.{{ theme.BOOTSWATCH }}.css">
+        <!--<link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css"> -->
+
+            <!-- Option 1: Bootstrap Bundle with Popper -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+
+
+        <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"> -->
+        <!-- <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap.min.css"> -->
+
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.css">
+        <!-- <link rel="stylesheet" href="https://www.trainshift.com/static/dashboard/css/nouislider.min.css"> -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/13.1.5/nouislider.min.css">
+
+
+        
+        <!-- <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script> -->
+        <!-- <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script> -->
+        <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+        <!-- <script src="https:////cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+        <script src="https:////cdn.datatables.net/1.11.5/js/dataTables.bootstrap.min.js"></script> -->
+        <!-- <script src="https:////cdn.datatables.net/1.11.5/js/dataTables.numericComma.js"></script> -->
+        <!-- Load d3.js -->
+        <script src="https://d3js.org/d3.v6.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-annotation/2.5.1/d3-annotation.min.js"></script>
+
+        <script src="./static/moment.min.js"></script>
+        <!-- <script src="https://www.trainshift.com/static/dashboard/js/moment.min.js"></script> -->
+        <!-- <script src="https://www.trainshift.com/static/dashboard/js/Chart.min.js"></script> -->
+        <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.3.2/chart.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-annotation/1.0.2/chartjs-plugin-annotation.min.js"></script> -->
+
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"></script>
+        <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-annotation/1.4.0/chartjs-plugin-annotation.min.js"></script> -->
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-annotation/1.0.2/chartjs-plugin-annotation.min.js"></script> -->
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/13.1.5/nouislider.min.js"></script>
+
+        <script src="./static/charting.js"></script>
+        <script src="./static/utils.js"></script>
+
+        <script>
+        $(document).ready(function() {
+            $(document).on('click', '.nav-item a', function (e) {
+                //console.log($(this).parent());
+                //alert('here');
+                $(this).parent().addClass('active').siblings().removeClass('active');
+            });
+        });
+        
+        </script>
+        
+        <!-- <script>
+          Chart.register('chartjs-plugin-annotation');
+        </script> -->
+
+    </head>
+
+    <body>
+
+      
+        
+     <div id="top_container" class="ui container">
+
+        <!-- <center><h1>Evander</h1></center> -->
+
+        <nav class="navbar navbar-expand-lg {{ theme.NAVBAR_CLASS }} {{ theme.NAVBAR_TEXT_CLASS }}">
+          
+            <div class="container-fluid">
+              <a class="navbar-brand" href="./">Quantumizer</a>
+              <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor02" aria-controls="navbarColor02" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+              </button>
+          
+              <!-- <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+              </button> -->
+          
+              <div class="collapse navbar-collapse" id="navbarColor01">
+                <ul class="navbar-nav me-auto">
+                  <li class="nav-item">
+                    <a class="nav-link" href="./">Home
+                      <span class="visually-hidden">(current)</span>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="./transaction_search">Transactions</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="./transaction_summary">Summary</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="./compare">Compare</a>
+                  </li>
+                  <!-- <li class="nav-item">
+                    <a class="nav-link" href="./performance">Performance</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="./workout_search">Workouts</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="./workout_autotrain">AutoTrain</a>
+                  </li> -->
+                </ul>
+
+
+                <a class="navbar-brand" href="#" onclick="on_expand();" id="image_expand"><img title="Expand" src="./static/icons/Expand-1-T.png" style="width:40px;height:40px;margin-bottom:16px;"></a>
+                <a class="navbar-brand" href="#" onclick="on_collapse();" id="image_collapse"><img title="Collapse" src="./static/icons/Collapse-1-T.png" style="width:40px;height:40px;margin-bottom:16px;"></a>
+           
+
+                <form class="d-flex" action="./logout">
+                  <button class="btn {{ theme.BUTTON_CLASS }} my-2 my-sm-0" type="submit">Logout</button>
+                  <!-- <button class="btn btn-outline-info my-2 my-sm-0" type="submit">Logout</button> -->
+                </form>
+
+                  <!-- <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Dropdown</a>
+                    <div class="dropdown-menu">
+                      <a class="dropdown-item" href="#">Action</a>
+                      <a class="dropdown-item" href="#">Another action</a>
+                      <a class="dropdown-item" href="#">Something else here</a>
+                      <div class="dropdown-divider"></div>
+                      <a class="dropdown-item" href="#">Separated link</a>
+                    </div>
+                  </li> -->
+              </div>
+            </div>
+          </nav>
+        <p style="margin-bottom:0.2cm;"></p>
+        {% block content %}
+        {% endblock %}
+    </div>
+    <script>
+
+    //$(document).ready( function () {
+      //$('#image_expand').hide();
+      $('#image_collapse').hide();
+
+      if ( readCookie("q_window_pending_state") == "expand" ) {
+        do_expand();
+      } else if ( readCookie("q_window_pending_state") == "collapse" ) {
+        $('#image_expand').show();
+      } else {
+        //console.log("Start Stable: " + readCookie("window_state"));
+        if ( readCookie("q_window_state") == "collapse" )
+        {
+          $('#image_expand').show();
+        } else if ( readCookie("q_window_state") == "expand" ) {
+          do_expand(true);
+        }
+      }
+    //});
+
+      function on_collapse() {
+        createCookie("q_window_state", "collapse");
+        createCookie("q_window_pending_state", "");
+        window.location.reload();
+      }
+
+      function do_collapse() {
+        if ( readCookie("q_window_pending_state") == "collapse" ) {
+          $('#top_container').toggleClass('container_off container');
+          $('#image_expand').show();
+          $('#image_collapse').hide();
+          createCookie("q_window_state", "collapse");
+          createCookie("q_window_pending_state", "");
+        }
+      }
+
+      function on_expand() {
+        createCookie("q_window_pending_state", "expand");
+        window.location.reload();
+      }
+
+      function do_expand(nocheck) {
+        if ( nocheck || readCookie("q_window_pending_state") == "expand" ) {
+          $('#top_container').toggleClass('container container_off');
+          $('#image_expand').hide();
+          $('#image_collapse').show();
+          createCookie("q_window_state", "expand");
+          createCookie("q_window_pending_state", "");
+        }
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,4 @@
+{
+    "type": "all",
+    "fields" : "security_code,exchange,close_price,last_price"
+}

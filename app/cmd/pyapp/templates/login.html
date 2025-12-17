@@ -1,0 +1,80 @@
+<html>
+    <head>
+        <title>Evander</title>
+        
+        <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css"> -->
+        <link rel="stylesheet" href="./static/bootstrap.{{ theme.BOOTSWATCH }}.css">
+        <!--<link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css"> -->
+
+        <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"> -->
+        <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap.min.css">
+
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.css">
+        <!-- <link rel="stylesheet" href="https://www.trainshift.com/static/dashboard/css/nouislider.min.css"> -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/13.1.5/nouislider.min.css">
+
+        
+        <!-- <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script> -->
+        <!-- <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script> -->
+        <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+        <!-- <script src="https:////cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+        <script src="https:////cdn.datatables.net/1.11.5/js/dataTables.bootstrap.min.js"></script> -->
+        <!-- <script src="https:////cdn.datatables.net/1.11.5/js/dataTables.numericComma.js"></script> -->
+        <!-- Load d3.js -->
+        <script src="https://d3js.org/d3.v6.js"></script>
+
+        <script src="./static/moment.min.js"></script>
+        <!-- <script src="https://www.trainshift.com/static/dashboard/js/moment.min.js"></script> -->
+        <!-- <script src="https://www.trainshift.com/static/dashboard/js/Chart.min.js"></script> -->
+        <script src=" https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"></script>
+       
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/13.1.5/nouislider.min.js"></script>
+        
+        <!-- <script src="https://www.trainshift.com/static/dashboard/js/nouislider.min.js"></script> -->
+
+    </head>
+
+    <body>
+        
+    <div class="ui container">
+
+        <center><h1>Quantumizer</h1></center>
+
+
+<centre><h2>Login</h2></centre>
+
+<form method="post" _lpchecked="1" id="myform" action="/auth/token" >
+  <fieldset>
+<!-- <div class="ui input">
+  <input name="name" type="text" placeholder="Name" value="{{ name or '' }}">
+</div> -->
+
+<div class="form-group row">
+  <div class="col-3" style="width:150px">
+    <label for="level" class="form-label">Username</label>
+    <input type="text" placeholder="username" class="input-control" name="username">
+  </div>
+</div>
+<BR>
+<div class="form-group row">
+  <div class="col-md-4" style="width:120px">
+      <label for="level" class="form-label">Password</label>
+      <input type="password" placeholder="password" class="input-control" name="password">
+  </div>
+</div>
+<BR>
+  <div class="form-group row">
+    <div class="col-md-4" style="width:120px">
+     <button type="submit" class="btn btn-primary" name="action" value="refresh">Login</button>
+  </div>
+  </div>
+
+</div>
+
+</fieldset>
+</form>
+</div>
+
+</body>
+</html>

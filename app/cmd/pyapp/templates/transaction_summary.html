@@ -1,0 +1,466 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<!-- <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap4.min.css"> -->
+<script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap4.min.js"></script>
+
+<style type=“text/css”>
+
+  .right-aligned-cell {
+    text-align: right;
+  }
+
+  table td.text-right {
+    text-align: right;
+  }
+  
+  table td.numcol {
+    text-align : right;
+  }
+
+  .blue {
+    color: blue;
+  }
+  
+  .noBorder {
+      border: 0px;
+      padding:0; 
+      margin:0;
+      border-collapse: collapse;
+  }
+
+  .table {
+    color: white;
+    background-color: #eeeeee;
+  }
+
+  /* table.dataTable tbody tr.selected {
+    color: white;
+    background-color: #eeeeee;
+} */
+
+/* .transaction_total_table_wrapper.dataTable tbody td {
+    color: white;
+    background-color: #eeeeee;
+} */
+
+  /* .transactions_table.dataTable tbody td {
+    vertical-align: middle;
+  } */
+  /* .table.dataTable td {
+    font-size: 1em;
+  } */
+  /* .table.dataTable {
+      font-family: tahoma;
+      font-size: 13px;
+      direction: rtl;
+      position: relative;
+      clear: both;
+      *zoom: 1;
+      zoom: 1;
+  } */
+  
+</style>
+
+<script>
+
+var parseTime = d3.timeParse("%Y-%m-%d %H:%M:%S"), formatShortDate = d3.timeFormat("%Y-%m-%d %H:%M"),formatDate = d3.timeFormat("%Y-%m-%d");
+var parseDate = d3.timeParse("%Y-%m-%d");
+
+$(document).ready( function () {
+
+  {
+    {
+      var objSelect = document.getElementById("myform").period;
+      var select = "{{ period or '' }}";
+      setSelectedValue(objSelect, select);
+    }
+    
+    {
+      var objSelect = document.getElementById("myform").t_type;
+      var select = "{{ t_type or '' }}";
+      setSelectedValue(objSelect, select);
+    }
+    SyncData();
+  }
+});
+
+function SyncData()
+{
+  loadTotalTable();
+  loadSummaryGroupTable();
+}
+
+function loadTotalTable()
+{
+  var t_period = getSelectedValue(document.getElementById("myform").period);
+  var trans_type = getSelectedValue(document.getElementById("myform").t_type);
+    
+  d3.json("api/transaction_total", {
+    method:"POST",
+    body: JSON.stringify({period: t_period, t_type: trans_type }), 
+    headers: {
+      "Content-type": "application/json; charset=UTF-8",
+      "Authorization" : "Bearer " + getCookie("access-token")
+    }
+  }).then( function(data_json) {
+
+  var dataSet = data_json['results'];
+
+  var table = $('#transaction_total_table').DataTable(
+      {
+        "bInfo": false,
+        "autoWidth": true,
+        "bFilter": false,
+        "bLengthChange": false,
+        "paging": false,
+        "pageLength": 17,
+        "order": [[ 0, 'asc' ]],      
+        "columnDefs": [
+            { "width": "150px", "targets": 0 },
+            { "width": "100px",  "targets": 1 },
+            {
+                "render": function ( data, type, row ) {
+                    return row[1].toLocaleString('en-US', {maximumFractionDigits:0}) 
+                },
+                "targets": 1
+            },
+        ],
+        "data": dataSet,
+        "columns": [
+            { "title": 'Group', "class": "blue" },
+            { "title": 'Amount', "class": "blue" },
+        ],
+      });
+
+      $('#transaction_total_table').off('click', 'tr');
+      $('#transaction_total_table').on('click', 'tr', function () {
+        var row = table.row(this).data();
+        $(table.cells().nodes()).removeClass('highlight');
+        $(table.row(this).nodes()).addClass('highlight');
+
+        removeTransactionTable();
+        removeSummaryClassTable();
+        loadSummaryGroupTable(row[0]);
+      });
+
+      // $("#transaction_total_table tbody tr").each(function() { $(this).find('td:eq(1)').addClass('text-right'); });
+
+    });
+
+    $("#transaction_total_table").show();
+  }
+
+var summaryGroupTable = null;
+  
+function loadSummaryGroupTable(group_filter = null)
+{
+  var t_period = getSelectedValue(document.getElementById("myform").period);
+  var trans_type = getSelectedValue(document.getElementById("myform").t_type);
+    
+  d3.json("api/transaction_summary", {
+    method:"POST",
+    body: JSON.stringify({period: t_period, t_type: trans_type, t_group : group_filter, group_by : "group"}), 
+    headers: {
+      "Content-type": "application/json; charset=UTF-8",
+      "Authorization" : "Bearer " + getCookie("access-token")
+    }
+  }).then( function(data_json) {
+
+  var dataSet = data_json['results'];
+
+  if ( summaryGroupTable != null ) {
+    summaryGroupTable.destroy();
+    summaryGroupTable = null;
+  }
+
+  summaryGroupTable = $('#transaction_summary_group_table').DataTable(
+      {
+        "bInfo": false,
+        "autoWidth": true,
+        "bFilter": false,
+        "bLengthChange": false,
+        "paging": false,
+        "pageLength": 17,
+        "order": [[ 0, 'asc' ],[ 1, 'asc' ]],      
+        "columnDefs": [
+            { "width": "120px", "targets": 0 },
+            { "width": "100px", "targets": 1 },
+            // { "width": "100px", "targets": 2 },
+            {
+                "render": function ( data, type, row ) {
+                    return row[2].toLocaleString('en-US', {maximumFractionDigits:0}) 
+                    //return roundNumber(row[2],0);
+                },
+                "targets": 2
+            },
+        ],
+        "data": dataSet,
+        "columns": [
+            { "title": 'Group' },
+            { "title": 'Date' },
+            { "title": 'Amount' },
+        ],
+      });
+
+        $('#transaction_summary_group_table').off('click', 'tr');
+        $('#transaction_summary_group_table').on('click', 'tr', function () {
+        removeTransactionTable();
+        var row = summaryGroupTable.row(this).data();
+        var dtStart = parseDate(row[1] + "-01");
+        var dtEnd = new Date(dtStart.getFullYear(), dtStart.getMonth()+1, 0);
+        loadSummaryClassTable(row[0], formatDate(dtStart), formatDate(dtEnd));
+      });
+
+      $("#transaction_summary_group_table tbody tr").each(function() { $(this).find('td:eq(2)').addClass('text-right'); });
+    });
+
+    $("#transaction_summary_group_table").show();
+  }
+
+var summaryClassTable = null;
+
+function removeSummaryClassTable() {
+  if ( summaryClassTable != null ) {
+    summaryClassTable.clear();
+    summaryClassTable.destroy();
+    summaryClassTable = null;
+  }
+}
+  
+function loadSummaryClassTable(group_filter = null, start_date = null, end_date = null)
+{
+  var t_period = getSelectedValue(document.getElementById("myform").period);
+  var trans_type = getSelectedValue(document.getElementById("myform").t_type);
+
+  d3.json("api/transaction_summary", {
+    method:"POST",
+    body: JSON.stringify({period: t_period, t_type: trans_type, t_group : group_filter, group_by : "class", start_date : start_date, end_date: end_date}), 
+    headers: {
+      "Content-type": "application/json; charset=UTF-8",
+      "Authorization" : "Bearer " + getCookie("access-token")
+    }
+  }).then( function(data_json) {
+
+  var dataSet = data_json['results'];
+
+  removeSummaryClassTable();
+
+  summaryClassTable = $('#transaction_summary_class_table').DataTable(
+      {
+        "bInfo": false,
+        "autoWidth": true,
+        "bFilter": false,
+        "bLengthChange": false,
+        "paging": false,
+        "pageLength": 17,
+        "order": [[ 0, 'asc' ],[ 1, 'asc' ]],      
+        "columnDefs": [
+            // { "width": "150px", "targets": 0 },
+            { "visible": false, "targets": 1 },
+            // { "width": "100px", "targets": 2 },
+            {
+                "render": function ( data, type, row ) {
+                    return row[2].toLocaleString('en-US', {maximumFractionDigits:0}) 
+                    //return roundNumber(row[2],0);
+                },
+                "targets": 2
+            },
+        ],
+        "data": dataSet,
+        "columns": [
+            { "title": 'Class' },
+            { "title": 'Date' },
+            { "title": 'Amount' },
+        ],
+      });
+
+    $('#transaction_summary_class_table').off('click', 'tr');
+    $('#transaction_summary_class_table').on('click', 'tr', function () {
+      var row = summaryClassTable.row(this).data();
+      // console.log(summaryClassTable.row(this).data());
+      var dtStart = parseDate(row[1] + "-01");
+      var dtEnd = new Date(dtStart.getFullYear(), dtStart.getMonth()+1, 0);
+      loadTransactionTable(row[0], null, formatDate(dtStart), formatDate(dtEnd));
+    });
+
+
+
+      $("#transaction_summary_class_table tbody tr").each(function() { $(this).find('td:eq(2)').addClass('text-right'); });
+    });
+
+
+
+    $("#transaction_summary_class_table").show();
+  }
+
+
+
+var transactionTable = null;
+
+function removeTransactionTable() {
+  if ( transactionTable != null ) {
+      transactionTable.clear();
+      transactionTable.destroy();
+      transactionTable = null;
+    }
+}
+
+function loadTransactionTable(class_filter = null, group_filter = null, start_date = null, end_date = null)
+{
+  var t_period = getSelectedValue(document.getElementById("myform").period);
+  var trans_type = getSelectedValue(document.getElementById("myform").t_type);
+
+  console.log(JSON.stringify({period: t_period, t_type: trans_type, t_class : class_filter, t_group : group_filter, start_date : start_date, end_date: end_date }));
+    
+  d3.json("api/transaction_search", {
+    method:"POST",
+    body: JSON.stringify({period: t_period, t_type: trans_type, t_class : class_filter, t_group : group_filter, start_date : start_date, end_date: end_date }), 
+    headers: {
+      "Content-type": "application/json; charset=UTF-8",
+      "Authorization" : "Bearer " + getCookie("access-token")
+    }
+  }).then( function(data_json) {
+
+  removeTransactionTable();
+
+  var dataSet = data_json['results'];
+
+  transactionTable = $('#transaction_table').DataTable(
+      {
+        "bInfo": false,
+        "autoWidth": true,
+        "bFilter": false,
+        "bLengthChange": false,
+        "paging": false,
+        "pageLength": 12,
+        "order": [[ 1, 'asc' ]],      
+        "columnDefs": [
+            // { "width": "150px", "targets": 0 },
+            { "width": "100px", "targets": 3 },
+            { "visible": false, "targets": [1,4,5] },
+            // { "width": "100px", "targets": 2 },
+            {
+                "render": function ( data, type, row ) {
+                    return row[3].toLocaleString('en-US', {maximumFractionDigits:0}) 
+                },
+                "targets": 3
+            },
+        ],
+        "data": dataSet,
+        "columns": [
+            { "title": 'ID' },
+            { "title": 'Date' },
+            { "title": 'Description' },
+            { "title": 'Amount' },
+            { "title": 'Class' },
+            { "title": 'Group' },
+        ],
+      });
+
+    });
+    $("#transaction_table").show();
+  }
+
+</script>
+
+<!-- <centre><h2>Transaction Summary</h2></centre> -->
+
+<form method="get" _lpchecked="1" id="myform">
+  <fieldset>
+<div class="form-group row">
+<!-- <div class="col-3" style="width:100px;">
+      <label for="duration" class="form-label">Period</label>
+  </div> -->
+  <div class="col-3" style="width:150px">
+    <div class="form-outline">
+      <select class="form-control" name="period" onchange="this.form.submit()">
+        <option>1 Month</option>
+        <option>3 Months</option>
+        <option>6 Months</option>
+        <option selected>12 Months</option>
+        <option>24 Months</option>
+        <option>All</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="col-3" style="width:180px">
+    <div class="form-outline">
+      <select class="form-control" name="t_type" onchange="this.form.submit()">
+        <option selected>Debit Normal</option>
+        <option>Credit Normal</option>
+        <option>Debit Abnormal</option>
+        <option>Credit Abnormal</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- <div class="col-3">
+     <button type="submit" class="btn btn-primary" name="action" value="refresh">Refresh</button>
+  </div> -->
+</div>
+</fieldset>
+</form>
+<!-- <form method="get" _lpchecked="1" id="myform">
+  <fieldset>
+    <div class="form-group row">
+      <div class="col-md-4" style="width:220px">
+          <label for="name" class="form-label">Name</label>
+          <input class="input-control" name="name" onchange="this.form.submit()">
+      </div>
+
+    </div>
+  </fieldset>
+</form> -->
+
+<div class="form-group row">
+
+  <div class="col-2">
+    <div class="card {{ CARD_CLASS }} mb-2">
+      <div class="card-header">Group Total</div>
+      <div class="card-body">
+        <table id="transaction_total_table" class="table table-hover table-striped order-column table-condensed dt-responsive nowrap {{ theme.TABLE_CLASS }}" style="width:100%;font-size:{{ theme.TABLE_FONT_SIZE }};" cellspacing="0" cellpadding="0">
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-3">
+    <div class="card {{ CARD_CLASS }} mb-2">
+      <div class="card-header">Group By Month</div>
+      <div class="card-body">
+        <table id="transaction_summary_group_table" class="table table-hover table-striped order-column table-condensed dt-responsive nowrap {{ theme.TABLE_CLASS }}" style="width:100%;font-size:{{ theme.TABLE_FONT_SIZE }};" cellspacing="0" cellpadding="0">
+        </table>        
+      </div>
+    </div>
+  </div>
+
+  <div class="col-2">
+    <div class="card {{ CARD_CLASS }} mb-2">
+      <div class="card-header">Class Total</div>
+      <div class="card-body">
+        <table id="transaction_summary_class_table" class="table table-hover table-striped order-column table-condensed dt-responsive nowrap {{ theme.TABLE_CLASS }}" style="width:100%;font-size:{{ theme.TABLE_FONT_SIZE }};" cellspacing="0" cellpadding="0">
+        </table>        
+      </div>
+    </div>
+  </div>
+
+  <div class="col-5">
+    <div class="card {{ CARD_CLASS }} mb-2">
+      <div class="card-header">Transactions</div>
+      <div class="card-body">
+        <table id="transaction_table" class="table table-hover table-striped order-column table-condensed dt-responsive nowrap {{ theme.TABLE_CLASS }}" style="width:100%;font-size:{{ theme.TABLE_FONT_SIZE }};" cellspacing="0" cellpadding="0">
+        </table>        
+      </div>
+    </div>
+  </div>
+
+</div>
+
+
+
+{% endblock %}

@@ -1,0 +1,601 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<style type=“text/css”>
+
+  .noBorder {
+      border: 0px;
+      padding:0; 
+      margin:0;
+      border-collapse: collapse;
+  }
+
+  th, td {
+    padding: 1px;
+  }
+
+  .customTD {
+    padding: 1px;
+  }
+
+</style>
+
+<div class="form-group row">
+
+  <div class="col-12">
+    <div class="card {{ theme.CARD_CLASS }} mb-2">
+      <!-- <div class="card-header">Difference</div> -->
+      <div class="card-body">
+        <div class="form-group row">
+          <div class="col-2">
+            <div class="form-group row">
+              <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+                <input type="radio" class="btn-check" name="btnradio" id="btnradio1"  onclick="update_charts('3 Months')" autocomplete="off" checked="">
+                <label class="btn btn-outline-primary" for="btnradio1">3M</label>
+                <input type="radio" class="btn-check" name="btnradio" id="btnradio2"  onclick="update_charts('6 Months')" autocomplete="off" checked="">
+                <label class="btn btn-outline-primary" for="btnradio2">6M</label>
+                <input type="radio" class="btn-check" name="btnradio" id="btnradio3"  onclick="update_charts('12 Months')" autocomplete="off" checked="">
+                <label class="btn btn-outline-primary" for="btnradio3">12M</label>
+                <input type="radio" class="btn-check" name="btnradio" id="btnradio4" onclick="update_charts('24 Months')" autocomplete="off" checked="">
+                <label class="btn btn-outline-primary" for="btnradio4">24M</label>
+              </div>
+            </div> 
+
+            <!-- <div class="form-group row">
+              <BR>
+            </div>
+
+          <div class="form-group row">
+            <center><div id="difference_statement"></div></center>
+            <center><span class="badge rounded-pill"  style="font-size:16px;" id="difference_value"></span></center>
+          </div> -->
+
+        </div>
+          
+        <!-- <div class="col-10">
+          <div id="chart_difference"></div>
+        </div> -->
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="form-group row">
+  <div class="col-12">
+    <div class="card {{ theme.CARD_CLASS }} mb-2">
+      <div class="card-header">
+        <form class="form-inline">
+          <div class="form-group">
+            <label for="size" style="clear:left;text-align:right;padding-right:10px;"></label>
+            <div style="display: inline-block;">
+              <select class="form-select debit-groups" style="width:180px;height:35px" id="t_type_debit1" onchange="update_spend(null,1);">
+                <option selected>Debit Normal</option>
+                <option>Debit Abnormal</option>
+                <option>Credit Normal</option>
+                <option>Credit Abnormal</option>
+              </select>
+            </div>
+            <div style="display: inline-block;">
+              <select class="form-select debit-groups" style="width:180px;height:35px" id="t_debit_groups1" onchange="update_spend(null,1);">
+              </select>
+            </div>
+            <div style="display: inline-block;">
+              <select class="form-select debit-groups" style="width:180px;height:35px" id="t_debit_classes1" onchange="update_spend(null,1, true);">
+              </select>
+            </div>
+            &nbsp;Average:<span class="badge rounded-pill"  style="font-size:16px;" id="average1"></span>
+          </div>
+        </form> 
+        
+      </div>
+      <div class="card-body">
+        <div id="chart_spend1"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="form-group row">
+  <div class="col-12">
+    <div class="card {{ theme.CARD_CLASS }} mb-2">
+      <div class="card-header">
+        <form class="form-inline">
+          <div class="form-group">
+            <label for="size" style="clear:left;text-align:right;padding-right:10px;"></label>
+            <div style="display: inline-block;">
+              <select class="form-select debit-groups" style="width:180px;height:35px" id="t_type_debit2" onchange="update_spend(null,2);;">
+                <option selected>Debit Normal</option>
+                <option>Debit Abnormal</option>
+                <option>Credit Normal</option>
+                <option>Credit Abnormal</option>
+              </select>
+            </div>
+            <div style="display: inline-block;">
+              <select class="form-select debit-groups" style="width:180px;height:35px" id="t_debit_groups2" onchange="update_spend(null, 2);">
+              </select>
+            </div>
+            <div style="display: inline-block;">
+              <select class="form-select debit-groups" style="width:180px;height:35px" id="t_debit_classes2" onchange="update_spend(null,2, true);">
+              </select>
+            </div>
+            &nbsp;Average:<span class="badge rounded-pill"  style="font-size:16px;" id="average2"></span>
+          </div>
+        </form> 
+      </div>
+      <div class="card-body">
+        <div id="chart_spend2"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="form-group row">
+  <div class="col-12">
+    <div class="card {{ theme.CARD_CLASS }} mb-2">
+      <div class="card-header">
+        <form class="form-inline">
+          <div class="form-group">
+            <label for="size" style="clear:left;text-align:right;padding-right:10px;"></label>
+            <div style="display: inline-block;">
+              <select class="form-select debit-groups" style="width:180px;height:35px" id="t_type_debit3" onchange="update_spend(null, 3);">
+                <option selected>Debit Normal</option>
+                <option>Debit Abnormal</option>
+                <option>Credit Normal</option>
+                <option>Credit Abnormal</option>
+              </select>
+            </div>
+            <div style="display: inline-block;">
+              <select class="form-select debit-groups" style="width:180px;height:35px" id="t_debit_groups3" onchange="update_spend(null, 3);">
+              </select>
+            </div>
+            <div style="display: inline-block;">
+              <select class="form-select debit-groups" style="width:180px;height:35px" id="t_debit_classes3" onchange="update_spend(null,3, true);">
+              </select>
+            </div>
+            &nbsp;Average:<span class="badge rounded-pill"  style="font-size:16px;" id="average3"></span>
+          </div>
+        </form> 
+      </div>
+      <div class="card-body">
+        <div id="chart_spend3"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="form-group row">
+  <div class="col-12">
+    <div class="card {{ theme.CARD_CLASS }} mb-2">
+      <div class="card-header">
+        <form class="form-inline">
+          <div class="form-group">
+            <label for="size" style="clear:left;text-align:right;padding-right:10px;"></label>
+            <div style="display: inline-block;">
+              <select class="form-select debit-groups" style="width:180px;height:35px" id="t_type_debit4" onchange="update_spend(null, 4);">
+                <option selected>Debit Normal</option>
+                <option>Debit Abnormal</option>
+                <option>Credit Normal</option>
+                <option>Credit Abnormal</option>
+              </select>
+            </div>
+            <div style="display: inline-block;">
+              <select class="form-select debit-groups" style="width:180px;height:35px" id="t_debit_groups4" onchange="update_spend(null, 4);">
+              </select>
+            </div>
+            <div style="display: inline-block;">
+              <select class="form-select debit-groups" style="width:180px;height:35px" id="t_debit_classes4" onchange="update_spend(null,4, true);">
+              </select>
+            </div>
+            &nbsp;Average:<span class="badge rounded-pill"  style="font-size:16px;" id="average4"></span>
+          </div>
+        </form> 
+      </div>
+      <div class="card-body">
+        <div id="chart_spend4"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+
+    var defaultPeriod = "6 Months";
+
+    var map_state = new Map();
+
+    map_state.set(1,defaultPeriod);
+    map_state.set(2,defaultPeriod);
+    map_state.set(3,defaultPeriod);
+    map_state.set(4,defaultPeriod);
+
+    function update_charts(period, type = null) {
+      map_state.forEach(function (value, key) {
+        update_spend(period, key);
+      });
+    }
+
+    d3.select(window).on('resize', resize); 
+
+    function resize() {
+
+      map_state.forEach(function (value, key) {
+        update_spend(null, key);
+      });
+        // update_spend(null);
+        // update_income(null);
+        // update_difference(null);
+    }
+
+    function loadGroupFilter(id, select_group_filter = null, select_class_filter = null) {
+
+      var t_type = getSelectedValue(document.getElementById("t_type_debit" + id));
+      var target_control_id = "t_debit_groups" + id;
+
+      d3.json("api/transaction_groups", {
+        method:"POST",
+        body: JSON.stringify({t_type: t_type}),
+        headers: {
+          "Content-type": "application/json; charset=UTF-8",
+          "Authorization" : "Bearer " + getCookie("access-token")
+        }
+      }).then( function(data_json) {
+
+        var groups = data_json['results']
+        var selectElement = document.getElementById(target_control_id);
+
+        $('#' + target_control_id).empty()
+        selectElement.add(new Option("ALL", false, false));
+
+        for (var i = 0; i < groups.length; i++) {
+          select = select_group_filter == groups[i] ? true : false;
+          selectElement.add(new Option(groups[i], false, false));
+        }
+
+        if ( select_group_filter != null ) {
+          const $select = document.querySelector('#' + target_control_id);
+          const $options = Array.from($select.options);
+          const optionToSelect = $options.find(item => item.text===select_group_filter);
+          optionToSelect.selected = true;
+        }
+
+        loadClassFilter(id, t_type, select_class_filter);
+
+      });
+    }
+
+    function loadClassFilter(id, t_type, select_class_filter = null) {
+
+      var t_group = getSelectedValue(document.getElementById("t_debit_groups" + id));
+      var target_control_id = "t_debit_classes" + id;
+
+      d3.json("api/transaction_classes", {
+        method:"POST",
+        body: JSON.stringify({t_type: t_type, t_group: t_group}),
+        headers: {
+          "Content-type": "application/json; charset=UTF-8",
+          "Authorization" : "Bearer " + getCookie("access-token")
+        }
+      }).then( function(data_json) {
+
+        var groups = data_json['results']
+        var selectElement = document.getElementById(target_control_id);
+
+        $('#' + target_control_id).empty()
+        selectElement.add(new Option("ALL", false, false));
+
+        for (var i = 0; i < groups.length; i++) {
+          select = select_class_filter == groups[i] ? true : false;
+          selectElement.add(new Option(groups[i], false, false));
+        }
+
+        if ( select_class_filter != null ) {
+          const $select = document.querySelector('#' + target_control_id);
+          const $options = Array.from($select.options);
+          const optionToSelect = $options.find(item => item.text===select_class_filter);
+          optionToSelect.selected = true;
+        }
+
+      });
+    }
+
+    function update_spend(update_spend, id, use_class = false) {
+
+      if (update_spend == null) {
+        update_spend = map_state[id];
+      } else {
+        map_state[id] = update_spend;
+      }
+
+      var trans_type = getSelectedValue(document.getElementById("t_type_debit" + id));
+      var group_filter = getSelectedValue(document.getElementById("t_debit_groups" + id));
+
+      var class_filter = "ALL";
+      if ( use_class )
+      {
+        class_filter = getSelectedValue(document.getElementById("t_debit_classes" + id));
+      }
+
+      var color_mode = 0;
+      if ( trans_type.indexOf("Credit") != -1 ) {
+        color_mode = 1
+      }
+
+      loadGroupFilter(id, group_filter, class_filter);
+
+      update_bar_chart("#chart_spend" + id, update_spend, class_filter, group_filter, trans_type, "average" + id, color_mode);
+    }
+
+    function update_bar_chart(chart_id, period, t_class, t_group, t_type, average_text, color_mode) {
+
+      if ( t_group == "ALL" )
+      {
+        t_group = null;
+      }
+
+      var svg2 = d3.select(chart_id);
+      svg2.selectAll("*").remove();
+
+      const margin = {top: 10, right: 10, bottom: 20, left: 40};
+      var width = parseInt(d3.select(chart_id).style('width'), 10);
+      width = width - margin.left - margin.right;
+      //var height = parseInt(d3.select('#chart_spend').style('height'), 10);
+      var height = 150;
+      height = height - margin.top - margin.bottom;
+
+      // append the svg object to the body of the page
+      const svg = d3.select(chart_id)
+        .append("svg")
+          .attr("width", width + margin.left + margin.right)
+          .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+          .attr("transform",`translate(${margin.left},${margin.top})`);
+    
+    //var trans_type = getSelectedValue(document.getElementById("t_type_debit"));
+    // var trans_type = "Debit Normal"; //getSelectedValue(document.getElementById("myform").t_type);
+
+    var group_by = t_group != null ? "class" : "group";
+    
+    d3.json("api/transaction_summary", {
+      method:"POST",
+      body: JSON.stringify({period: period, t_type: t_type, t_class : t_class, t_group : t_group, group_by : group_by}),
+      headers: {
+        "Content-type": "application/json; charset=UTF-8",
+        "Authorization" : "Bearer " + getCookie("access-token")
+      }
+    }).then( function(data_json) {
+
+
+      // console.log(data_json);
+
+      var data = convertGroupJSON(data_json['results']);
+
+      // console.log(data);
+
+    const subgroups = data.columns.slice(1)
+    const groups = data.map(d => d.group)
+
+    var sum_y = d3.sum(data, function(d) 
+      { 
+        var total = 0; 
+        subgroups.forEach(element => {
+          if ( d[element] != null )
+          {
+            total +=  d[element];
+          }
+          });
+          return total;
+       });
+
+      if ( data.length > 0 )
+      {
+        var avg = sum_y/data.length;
+        $('#' + average_text).text(avg.toLocaleString('en-US', {maximumFractionDigits:0}));
+      }
+      else
+      {
+        $('#' + average_text).text("");
+      }
+
+  
+    // Add X axis
+    const x = d3.scaleBand()
+        .domain(groups)
+        .range([0, width])
+        .padding([0.2])
+
+    svg.append("g")
+      .attr("transform", `translate(0, ${height})`)
+      .call(d3.axisBottom(x).tickSizeOuter(0));
+
+      var max_y = d3.max(data, function(d) 
+      { 
+        var total = 0; 
+        subgroups.forEach(element => {
+          if ( d[element] != null )
+          {
+            total +=  d[element];
+          }
+          });
+          return total;
+       });
+
+    // Add Y axis
+    const y = d3.scaleLinear()
+      .domain([0, max_y])
+      .range([ height, 0 ]);
+      
+    svg.append("g")
+      .call(d3.axisLeft(y).ticks(5));
+
+    var c1 = d3.color("{{ theme.CHART_COLOR_R1_START }}");
+    var c2 = d3.color("{{ theme.CHART_COLOR_R1_END }}");
+
+    if ( color_mode == 1 )
+    {
+      c1 = d3.color("{{ theme.CHART_COLOR_R2_START }}");
+      c2 = d3.color("{{ theme.CHART_COLOR_R2_END }}");
+    }
+
+    r = createColorRange(c1, c2, subgroups.length);
+
+    // color palette = one color per subgroup
+    const color = d3.scaleOrdinal()
+      .domain(subgroups)
+      .range(r)
+      
+    //stack the data? --> stack per subgroup
+    const stackedData = d3.stack()
+      .keys(subgroups)
+      (data)
+  
+    // ----------------
+    // Create a tooltip
+    // ----------------
+    const tooltip = d3.select(chart_id)
+      .append("div")
+      .style("opacity", 1)
+      .attr("class", "tooltip")
+      .style("background-color",  "{{theme.CHART_TOOLTIP_BG}}")
+      .style("border", "solid")
+      .style("border-width", "1px")
+      .style("border-radius", "5px")
+      .style("padding", "1px")
+  
+    // Three function that change the tooltip when user hover / move / leave a cell
+    const mouseover = function(event, d) {
+
+      let elem = document.querySelector(chart_id);
+      let rect = elem.getBoundingClientRect();
+
+      const label = d.data['group'];
+      const subgroupName = d3.select(this.parentNode).datum().key;
+      const subgroupValue = d.data[subgroupName];
+      var total = 0;
+      for (var i = 0; i < subgroups.length; i++)
+      {
+        if ( d.data[subgroups[i]] != null )
+        {
+          total += parseInt(d.data[subgroups[i]]);
+        }
+      }
+
+      var tt = "<table class=\"table table-hover {{ theme.TABLE_CLASS }}\" style=\"border-spacing:0px;padding:0;margin:0;font-size:{{ theme.TABLE_FONT_SIZE_SMALL }};\"><thead><tr><th>Area</th><th>Amount</th><th>Pct</th></tr></thead>";
+      for (var i = 0; i < subgroups.length; i++)
+      {
+        if ( d.data[subgroups[i]] != null )
+        {
+          value = parseFloat(d.data[subgroups[i]]);
+
+          if ( value == 0 )
+          {
+            continue;
+          }
+
+          var row_class = "table-light";
+
+          if ( subgroupName == subgroups[i] )
+          {
+            row_class = "table-secondary";
+          }
+
+          tt += "<tr class=\"" + row_class + "\"><td>" + subgroups[i] + "</td><td>" + value.toLocaleString('en-US', {maximumFractionDigits:0})  + "</td><td>" + (100*(value/total)).toFixed() + "%</td></tr>"
+        }
+      }
+      tt += "</table";
+
+      var x = (event.offsetX/2-200);
+      if ( event.offsetX < rect.width/2 )
+      {
+        x = (event.offsetX/2)+200;;
+      }
+
+      var title = "<center><span class=\"badge {{ theme.BADGE_PRIMARY }}\" style=\"font-size:{{ theme.TABLE_FONT_SIZE }};\">" + label + "</span></center>";
+      title += "<center><span class=\"badge {{ theme.BADGE_PRIMARY }}\" style=\"font-size:{{ theme.TABLE_FONT_SIZE }};\">Total: " + total.toLocaleString('en-US', {maximumFractionDigits:0}) + "</span></center>"
+
+      tooltip
+          .html(title + tt)
+          .style("opacity", 1)
+          // .style("left",rect['left']+165+"px")
+          // .style("top",rect['top']-320+"px")
+          .style("left",x+"px")
+          .style("top",(event.y/2)-220+"px")
+  
+    }
+    const mousemove = function(event, d) {
+      // tooltip.style("transform","translateY(-55%)")
+      //        .style("left",(event.x)/2+30+"px")
+      //        .style("top",(event.y)/2-60+"px")
+    }
+    const mouseleave = function(event, d) {
+      tooltip
+        .style("opacity", 0)
+    }
+
+    // const annotations = [
+    //   {
+    //     note: {
+    //       //label: "Here is the annotation label",
+    //       title: "12222"
+    //     },
+    //     color: ["#FFFFFF"],
+    //     x: 100,
+    //     y: 100,
+    //     dy: 0,
+    //     dx: 0
+    //   }
+    // ]
+
+    // Show the bars
+    svg.append("g")
+      .selectAll("g")
+      // Enter in the stack data = loop key per key = group per group
+      .data(stackedData)
+      .join("g")
+        .attr("fill", d => hashStringToColor2(d.key))
+        .selectAll("rect")
+        // enter a second time = loop subgroup per subgroup to add all rectangles
+        .data(d => d)
+        .join("rect")
+          .attr("x", d =>  x(d.data.group))
+          .attr("y", d => y(d[1]))
+          .attr("height", d => y(d[0]) - y(d[1]))
+          .attr("width",x.bandwidth())
+          .attr("stroke", "grey")
+        .on("mouseover", mouseover)
+        // .on("mousemove", mousemove)
+        .on("mouseleave", mouseleave)
+
+        // svg.selectAll(".annotation")
+        // .data(function(d) {
+        //   return annotations.filter(function(a) { return a.key == d.key; });
+        // })
+        // .enter()
+        //   .append("text")
+        //   .attr("class", "annotation")
+        //   .attr("x", function(d) { return x(d.xPos); })
+        //   .attr("y", function(d) { return d.yPos; })
+        //   .text(function(d) { return d.data.group; })
+
+
+
+    //       // Add annotation to the chart
+    // const makeAnnotations = d3.annotation().annotations(annotations)
+    // svg.append("g")
+    // .attr("class", "annotation-group")
+    // .style("font-size", 11)
+    // .call(makeAnnotations)
+
+  
+  })
+}
+
+update_charts(defaultPeriod);
+
+document.getElementById("btnradio2").click();
+
+</script>
+
+{% endblock %}

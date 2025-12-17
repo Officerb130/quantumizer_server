@@ -1,0 +1,893 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<style type=“text/css”>
+
+  .noBorder {
+      border: 0px;
+      padding:0; 
+      margin:0;
+      border-collapse: collapse;
+  }
+
+  th, td {
+    padding: 1px;
+  }
+
+  .customTD {
+    padding: 1px;
+  }
+
+</style>
+
+<div class="form-group row">
+  <div class="col-12">
+    <div class="card {{ theme.CARD_CLASS }} mb-2">
+      <!-- <div class="card-header">Difference</div> -->
+      <div class="card-body">
+        <div class="form-group row">
+          <div class="col-6">
+              <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+                <input type="radio" class="btn-check" name="btnradio" id="btnradio1"  onclick="update_charts('6 Months')" autocomplete="off" checked="">
+                <label class="btn btn-outline-primary" for="btnradio1">6M</label>
+                <input type="radio" class="btn-check" name="btnradio" id="btnradio2"  onclick="update_charts('12 Months')" autocomplete="off" checked="">
+                <label class="btn btn-outline-primary" for="btnradio2">12M</label>
+                <input type="radio" class="btn-check" name="btnradio" id="btnradio3" onclick="update_charts('24 Months')" autocomplete="off" checked="">
+                <label class="btn btn-outline-primary" for="btnradio3">24M</label>
+                <input type="radio" class="btn-check" name="btnradio" id="btnradio4" onclick="update_charts('36 Months')" autocomplete="off" checked="">
+                <label class="btn btn-outline-primary" for="btnradio4">36M</label>
+                <input type="radio" class="btn-check" name="btnradio" id="btnradio5" onclick="update_charts('48 Months')" autocomplete="off" checked="">
+                <label class="btn btn-outline-primary" for="btnradio5">48M</label>
+                <input type="radio" class="btn-check" name="btnradio" id="btnradio6" onclick="update_charts('All')" autocomplete="off" checked="">
+                <label class="btn btn-outline-primary" for="btnradio6">All</label>
+              </div>
+          </div>
+          <div class="col-6">
+            <center><div id="difference_statement"></div></center>
+            <center><span class="badge rounded-pill"  style="font-size:16px;" id="difference_value"></span></center>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="form-group row">
+  <div class="col-6">
+    <div class="card {{ theme.CARD_CLASS }} mb-2">
+      <div class="card-header">
+        <form class="form-inline">
+          <div class="form-group">
+            <label for="size" style="clear:left;text-align:right;padding-right:10px;">Spend</label>
+            <div style="display: inline-block;">
+              <select class="form-select debit-groups" style="width:180px;height:35px" id="t_type_debit" onchange="update_spend(null);update_difference(null);">
+                <option selected>Debit Normal</option>
+                <option>Debit Abnormal</option>
+              </select>
+            </div>
+            <div style="display: inline-block;">
+              <select class="form-select debit-groups" style="width:180px;height:35px" id="t_debit_groups" onchange="update_spend(null);">
+              </select>
+            </div>
+          </div>
+        </form> 
+      </div>
+      <div class="card-body">
+        <div id="chart_spend"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-6">
+    <div class="card {{ theme.CARD_CLASS }} mb-2">
+      <div class="card-header">
+        <form class="form-inline">
+          <div class="form-group">
+            <label for="size" style="clear:left;text-align:right;padding-right:10px;">Income</label>
+            <div style="display: inline-block;">
+              <select class="form-select debit-groups" style="width:180px;height:35px" id="t_type_credit" onchange="update_income(null);update_difference(null);">
+                <option selected>Credit Normal</option>
+                <option>Credit Abnormal</option>
+              </select>
+            </div>
+            <div style="display: inline-block;">
+              <select class="form-select debit-groups" style="width:180px;height:35px" id="t_credit_groups" onchange="update_income(null);">
+              </select>
+            </div>
+          </div>
+        </form> 
+      </div>
+      <div class="card-body">
+        <div id="chart_income"></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="form-group row">
+  <div class="col-6">
+    <div class="card {{ theme.CARD_CLASS }} mb-2">
+      <div id="chart_difference"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+
+    var defaultPeriod = "{{ period }}";
+
+    var current_spend_state = defaultPeriod;
+    var current_income_state = defaultPeriod;
+    var current_difference_state = defaultPeriod;
+
+    var max_value = 0;
+
+    function update_charts(period) {
+        update_spend(period);
+        update_income(period);
+        update_difference(period);
+    }
+
+    d3.select(window).on('resize', resize); 
+
+    function resize() {
+        update_spend(null);
+        update_income(null);
+        update_difference(null);
+    }
+
+    function loadGroupFilter(t_type, target_control_id, select_group_filter = null) {
+
+      d3.json("api/transaction_groups", {
+        method:"POST",
+        body: JSON.stringify({t_type: t_type}),
+        headers: {
+          "Content-type": "application/json; charset=UTF-8",
+          "Authorization" : "Bearer " + getCookie("access-token")
+        }
+      }).then( function(data_json) {
+
+        var groups = data_json['results']
+        var selectElement = document.getElementById(target_control_id);
+
+        $('#' + target_control_id).empty()
+
+        select = select_group_filter == null ? true : false;
+
+        selectElement.add(new Option("ALL", false, false));
+
+        for (var i = 0; i < groups.length; i++) {
+          select = select_group_filter == groups[i] ? true : false;
+
+          // if ( select )
+          // {
+          //   console.log(select_group_filter);
+          // }
+
+          selectElement.add(new Option(groups[i], false, false));
+        }
+
+        if ( select_group_filter != null ) {
+          const $select = document.querySelector('#' + target_control_id);
+          const $options = Array.from($select.options);
+          const optionToSelect = $options.find(item => item.text===select_group_filter);
+          optionToSelect.selected = true;
+        }
+
+      });
+    }
+
+    function update_max_value(value, income) {
+      if ( value > max_value ) {
+        max_value = value;
+        if ( income ) { update_spend(); } else { update_income();}
+      }
+      return max_value;
+    }
+
+    function update_spend(update_spend) {
+
+      if (update_spend == null) {
+        update_spend = current_spend_state;
+      } else {
+        current_spend_state = update_spend;
+      }
+
+      var trans_type = getSelectedValue(document.getElementById("t_type_debit"));
+      var group_filter = getSelectedValue(document.getElementById("t_debit_groups"));
+
+      update_bar_chart("#chart_spend", update_spend, group_filter, trans_type, 0);
+
+      loadGroupFilter(getSelectedValue(document.getElementById("t_type_debit")), "t_debit_groups", group_filter);
+    }
+
+    function update_income(update_income) {
+
+      if (update_income == null) {
+        update_income = current_income_state;
+      } else {
+        current_income_state = update_income;
+      }
+
+        var trans_type = getSelectedValue(document.getElementById("t_type_credit"));
+        var group_filter = getSelectedValue(document.getElementById("t_credit_groups"));
+
+        update_bar_chart("#chart_income", update_income, group_filter, trans_type, 1);
+        loadGroupFilter(getSelectedValue(document.getElementById("t_type_credit")), "t_credit_groups", group_filter);
+    }
+
+    function update_bar_chart(chart_id, period, t_group, t_type, color_mode) {
+
+      if ( t_group == "ALL" )
+      {
+        t_group = null;
+      }
+
+      var svg2 = d3.select(chart_id);
+      svg2.selectAll("*").remove();
+
+      const margin = {top: 10, right: 10, bottom: 20, left: 40};
+      var width = parseInt(d3.select('#chart_spend').style('width'), 10);
+      width = width - margin.left - margin.right;
+      //var height = parseInt(d3.select('#chart_spend').style('height'), 10);
+      var height = 600;
+      height = height - margin.top - margin.bottom;
+
+      // append the svg object to the body of the page
+      const svg = d3.select(chart_id)
+        .append("svg")
+          .attr("width", width + margin.left + margin.right)
+          .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+          .attr("transform",`translate(${margin.left},${margin.top})`);
+    
+    //var trans_type = getSelectedValue(document.getElementById("t_type_debit"));
+    // var trans_type = "Debit Normal"; //getSelectedValue(document.getElementById("myform").t_type);
+
+    var group_by = t_group != null ? "class" : "group";
+    
+    d3.json("api/transaction_summary", {
+      method:"POST",
+      body: JSON.stringify({period: period, t_type: t_type, t_group : t_group, group_by : group_by}),
+      headers: {
+        "Content-type": "application/json; charset=UTF-8",
+        "Authorization" : "Bearer " + getCookie("access-token")
+      }
+    }).then( function(data_json) {
+
+    var data = convertGroupJSON(data_json['results']);
+
+    const subgroups_tmp = data.columns.slice(1)
+    const groups = data.map(d => d.group)
+
+    const fixed_subgroups = ["Loans", "Food", "Utilities", "Transport", "Health", "Cash", "Education", "Insurance", "Services", "Entertainment"];
+
+    // arr3 = fixed order intersect subgroups, then append any remaining subgroups (preserve data order)
+    const subgroups = fixed_subgroups.filter(x => subgroups_tmp.includes(x))
+                  .concat(subgroups_tmp.filter(x => !fixed_subgroups.includes(x)));
+
+    // Add X axis
+    const x = d3.scaleBand()
+        .domain(groups)
+        .range([0, width])
+        .padding([0.2])
+
+    svg.append("g")
+      .attr("transform", `translate(0, ${height})`)
+      .call(d3.axisBottom(x).tickSizeOuter(0));
+
+      // compute totals per row (sum of subgroups) and a 3-value trailing SMA
+      const totals = data.map(d => {
+        let tot = 0;
+        subgroups.forEach(k => { if (d[k] != null) tot += +d[k]; });
+        return +tot;
+      });
+
+      // 3-month trailing simple moving average (first two values will be null)
+      const maWindow = 3;
+      const ma = totals.map((_, i, arr) => {
+        if (i < maWindow - 1) return null;
+        const slice = arr.slice(i - (maWindow - 1), i + 1);
+        const sum = slice.reduce((s, v) => s + v, 0);
+        return sum / maWindow;
+      });
+
+      // Determine max y considering totals and moving average (ignore nulls)
+      const max_ma = d3.max(ma.filter(v => v != null));
+      var max_y = d3.max([ d3.max(totals), (isNaN(max_ma) ? 0 : max_ma) ]);
+
+      max_y = update_max_value(max_y, chart_id === "#chart_income");
+ 
+    // Add Y axis
+    const y = d3.scaleLinear()
+      .domain([0, max_y])
+      .range([ height, 0 ]);
+      
+    svg.append("g")
+      .call(d3.axisLeft(y).ticks(5));
+
+    // var red = new GColor(15, 100, 000);
+    // var blue = new GColor(205, 200, 105);
+
+    //var c1 = d3.color("{{ theme.CHART_COLOR_R1_START }}");
+    //var c2 = d3.color("{{ theme.CHART_COLOR_R1_END }}");
+
+    var c1 = d3.color("#000000");
+    var c2 = d3.color("#FFFFFF");
+
+    //if ( color_mode == 1 )
+    //{
+    //  c1 = d3.color("{{ theme.CHART_COLOR_R2_START }}");
+    //  c2 = d3.color("{{ theme.CHART_COLOR_R2_END }}");
+    //}
+
+    r = createColorRangeSmoothHSL(c1, c2, subgroups.length);
+    
+    // color palette = one color per subgroup
+    const color = d3.scaleOrdinal()
+      .domain(subgroups)
+      .range(r)
+      
+    //stack the data? --> stack per subgroup
+    const stackedData = d3.stack()
+      .keys(subgroups)
+      (data)
+  
+    // compute totals per group for annotations
+    const diffTotals = data.map(d => {
+      let tot = 0;
+      subgroups.forEach(k => { if (d[k] != null) tot += +d[k]; });
+      return tot;
+    });
+    
+    // add grand total annotation (sum of all group totals)
+    const grandTotal = diffTotals.reduce((sum, v) => sum + (isNaN(v) ? 0 : v), 0);
+    svg.append("text")
+      .attr("x", width)
+      .attr("y", 12)
+      .attr("text-anchor", "end")
+      .style("font-size", "13px")
+      .style("font-weight", "600")
+      .style("fill", "#ffffff")
+      .text("Total: " + grandTotal.toLocaleString('en-US', {maximumFractionDigits:0}));
+  
+    const avgValue = (groups && groups.length) ? (grandTotal / groups.length) : 0;
+    svg.append("text")
+      .attr("x", width)
+      .attr("y", 28)
+      .attr("text-anchor", "end")
+      .style("font-size", "13px")
+      .style("font-weight", "600")
+      .style("fill", "#ffffff")
+      .text("Avg: " + avgValue.toLocaleString('en-US', {maximumFractionDigits:0}));
+  
+    function mapXLocation(event, rect) {
+			var xoffset = 100;
+
+			if (event.offsetX > (rect.width / 2)) {
+				xoffset = -200;
+			}
+			return event.offsetX + xoffset;
+		}
+
+		function mapYLocation(event, rect) {
+			var yoffset = -10;
+			return event.offsetY + yoffset;
+		}
+
+    // ----------------
+    // Create a tooltip
+    // ----------------
+    const tooltip = d3.select(chart_id)
+      .append("div")
+      .style("opacity", 1)
+      .attr("class", "tooltip")
+      .style("background-color",  "{{theme.CHART_TOOLTIP_BG}}")
+      .style("border", "solid")
+      .style("border-width", "1px")
+      .style("border-radius", "5px")
+      .style("padding", "1px")
+  
+    // Draw 3-month moving average line and dots
+    // use the same color palette end color for the MA
+    const maColor = "white";//d3.color.white.toString();
+
+    const maLine = d3.line()
+      .defined(d => d != null)
+      .x((d, i) => x(groups[i]) + x.bandwidth() / 2)
+      .y(d => y(d))
+      .curve(d3.curveMonotoneX);
+
+    // MA dots
+    /*
+    svg.selectAll(".ma-dot")
+      .data(ma)
+      .enter()
+      .filter(d => d != null)
+      .append("circle")
+        .attr("class", "ma-dot")
+        .attr("cx", (d, i) => x(groups[i]) + x.bandwidth() / 2)
+        .attr("cy", d => y(d))
+        .attr("r", 3)
+        .style("fill", maColor)
+        .style("stroke", "white")
+        .style("stroke-width", 0.5);
+        */
+
+    // Three function that change the tooltip when user hover / move / leave a cell
+    const mouseover = function(event, d) {
+      // (no change)
+      let elem = document.querySelector(chart_id);
+      let rect = elem.getBoundingClientRect();
+
+      const label = d.data['group'];
+      const subgroupName = d3.select(this.parentNode).datum().key;
+      const subgroupValue = d.data[subgroupName];
+      var total = 0;
+      for (var i = 0; i < subgroups.length; i++)
+      {
+        if ( d.data[subgroups[i]] != null )
+        {
+          total += parseInt(d.data[subgroups[i]]);
+        }
+      }
+
+      var tt = "<table class=\"table table-hover {{ theme.TABLE_CLASS }}\" style=\"border-spacing:0px;padding:0;margin:0;font-size:{{ theme.TABLE_FONT_SIZE_SMALL }};\"><thead><tr><th>Area</th><th>Amount</th><th>Pct</th></tr></thead>";
+      // collect rows, sort by value descending, then render (preserve highlight for hovered subgroup)
+      var rows = [];
+      for (var i = 0; i < subgroups.length; i++) {
+        if (d.data[subgroups[i]] != null) {
+          var value = parseFloat(d.data[subgroups[i]]);
+          rows.push({ name: subgroups[i], value: value });
+        }
+      }
+      rows.sort(function(a, b) { return b.value - a.value; });
+      for (var i = 0; i < rows.length; i++) {
+        if (rows[i].value === 0) continue;
+        var row_class = "table-light";
+        if (subgroupName == rows[i].name) {
+          row_class = "table-secondary";
+        }
+        tt += "<tr class=\"" + row_class + "\"><td>" + rows[i].name + "</td><td>" + rows[i].value.toLocaleString('en-US', {maximumFractionDigits:0}) + "</td><td>" + (100*(rows[i].value/total)).toFixed() + "%</td></tr>";
+      }
+      tt += "</table";
+
+      var x = (event.offsetX/2-200);
+      if ( event.offsetX < rect.width/2 )
+      {
+        x = (event.offsetX/2)+200;;
+      }
+
+      var title = "<center><span class=\"badge {{ theme.BADGE_PRIMARY }}\" style=\"font-size:{{ theme.TABLE_FONT_SIZE }};\">" + label + "</span></center>";
+      title += "<center><span class=\"badge {{ theme.BADGE_PRIMARY }}\" style=\"font-size:{{ theme.TABLE_FONT_SIZE }};\">Total: " + total.toLocaleString('en-US', {maximumFractionDigits:0}) + "</span></center>"
+
+    let rect1 = svg.node().getBBox();
+    var xoffset = mapXLocation(event, rect1);
+    var yoffset = mapYLocation(event, rect1);
+
+    tooltip
+        //.html("Total: " + secondsToMinutes(total) + "<BR>" + subgroupName + " = " + secondsToMinutes(subgroupValue) + " (" + (100*(subgroupValue/total)).toFixed() + "%)")
+        .html(title + tt)
+        .style("opacity", 1)
+		    .style("left", xoffset)
+				.style("top", yoffset)
+        .style("visibility", "visible");
+  
+    }
+    const mousemove = function(event, d) {
+      // tooltip.style("transform","translateY(-55%)")
+      //        .style("left",(event.x)/2+30+"px")
+      //        .style("top",(event.y)/2-60+"px")
+    }
+    const mouseleave = function(event, d) {
+      tooltip
+        .style("opacity", 0)
+        .style("visibility", "hidden");
+    }
+
+    // const annotations = [
+    //   {
+    //     note: {
+    //       //label: "Here is the annotation label",
+    //       title: "12222"
+    //     },
+    //     color: ["#FFFFFF"],
+    //     x: 100,
+    //     y: 100,
+    //     dy: 0,
+    //     dx: 0
+    //   }
+    // ]
+
+    // Show the bars
+    svg.append("g")
+      .selectAll("g")
+      // Enter in the stack data = loop key per key = group per group
+      .data(stackedData)
+      .join("g")
+        .attr("fill", d => hashStringToColor2(d.key))
+        //.attr("fill", d => color(d.key))
+        .selectAll("rect")
+        // enter a second time = loop subgroup per subgroup to add all rectangles
+        .data(d => d)
+        .join("rect")
+          .attr("x", d =>  x(d.data.group))
+          .attr("y", d => y(d[1]))
+          .attr("height", d => y(d[0]) - y(d[1]))
+          .attr("width",x.bandwidth())
+          .attr("stroke", "grey")
+        .on("mouseover", mouseover)
+        .on("mousemove", mousemove)
+        .on("mouseleave", mouseleave)
+
+    svg.append("path")
+      .datum(ma)
+      .attr("class", "ma-line")
+      .attr("fill", "none")
+      .attr("stroke", maColor)
+      .attr("stroke-width", 2)
+      .attr("stroke-dasharray", "6 4")
+      .attr("stroke-linecap", "round")
+      .attr("d", maLine);
+
+        // svg.selectAll(".annotation")
+        // .data(function(d) {
+        //   return annotations.filter(function(a) { return a.key == d.key; });
+        // })
+        // .enter()
+        //   .append("text")
+        //   .attr("class", "annotation")
+        //   .attr("x", function(d) { return x(d.xPos); })
+        //   .attr("y", function(d) { return d.yPos; })
+        //   .text(function(d) { return d.data.group; })
+
+
+
+    //       // Add annotation to the chart
+    // const makeAnnotations = d3.annotation().annotations(annotations)
+    // svg.append("g")
+    // .attr("class", "annotation-group")
+    // .style("font-size", 11)
+    // .call(makeAnnotations)
+
+  
+  })
+}
+
+// update_spend(defaultPeriod);
+// update_income(defaultPeriod);
+  
+</script>
+
+<script>
+
+
+  function update_difference(update_difference) {
+
+    if (update_difference == null) {
+      update_difference = current_difference_state;
+    } else {
+      current_difference_state = update_difference;
+    }
+
+    var svg2 = d3.select("#chart_difference");
+    svg2.selectAll("*").remove();
+
+    const margin = {top: 10, right: 20, bottom: 20, left: 52};
+    var width = parseInt(d3.select('#chart_difference').style('width'), 10);
+    width = width - margin.left - margin.right;
+    //var height = parseInt(d3.select('#chart_spend').style('height'), 10);
+    var height = 250;
+    height = height - margin.top - margin.bottom;
+
+    // append the svg object to the body of the page
+    const svg = d3.select("#chart_difference")
+      .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+        .attr("transform",`translate(${margin.left},${margin.top})`);
+  
+  var trans_type = getSelectedValue(document.getElementById("t_type_credit"));
+  //var trans_type = "Credit Normal"; //getSelectedValue(document.getElementById("myform").t_type);
+
+  var t_type_compare = [ getSelectedValue(document.getElementById("t_type_debit")), getSelectedValue(document.getElementById("t_type_credit")) ]
+  
+  d3.json("api/transaction_summary", {
+    method:"POST",
+    body: JSON.stringify({period: update_difference, t_type: trans_type, group_by : "group", t_type_compare : t_type_compare}),
+    headers: {
+      "Content-type": "application/json; charset=UTF-8",
+      "Authorization" : "Bearer " + getCookie("access-token")
+    }
+  }).then( function(data_json) {
+
+
+    //console.log(data_json);
+
+    var data = convertSimpleJSON(data_json['results']);
+
+    //console.log(data_json['total']);
+
+    $('#difference_value').removeClass("bg-success");
+    $('#difference_value').removeClass("bg-danger");
+
+    if ( data_json['total'] > 0 ) 
+    {
+      $('#difference_statement').text("Surplus");
+      $('#difference_value').addClass("bg-success");
+    }
+    else
+    {
+      $('#difference_statement').text("Deficit");
+      $('#difference_value').addClass("bg-danger");
+    }
+
+    $('#difference_value').text(data_json['total'].toLocaleString('en-US', {maximumFractionDigits:0}));
+
+
+  // List of subgroups = header of the csv files = soil condition here
+  const subgroups = data.columns.slice(1)
+
+  // List of groups = species here = value of the first column called group -> I show them on the X axis
+  const groups = data.map(d => d.group)
+
+  // Add X axis
+  const x = d3.scaleBand()
+      .domain(groups)
+      .range([0, width])
+      .padding([0.2])
+
+  svg.append("g")
+    .attr("transform", `translate(0, ${height})`)
+    .call(d3.axisBottom(x).tickSizeOuter(0));
+
+    var min_y = d3.min(data, function(d) 
+    { 
+      var total = 0; 
+      subgroups.forEach(element => {
+        if ( d[element] != null )
+        {
+          total +=  d[element];
+        }
+        });
+        return total;
+     });
+
+    var max_y = d3.max(data, function(d) 
+    { 
+      var total = 0; 
+      subgroups.forEach(element => {
+        if ( d[element] != null )
+        {
+          total +=  d[element];
+        }
+        });
+        return total;
+     });
+
+  // Add Y axis
+  const y = d3.scaleLinear()
+    .domain([min_y, max_y])
+    .range([ height, 0 ]);
+    
+  svg.append("g")
+    .call(d3.axisLeft(y).ticks(5));
+    
+  //stack the data? --> stack per subgroup
+  const stackedData = d3.stack()
+    .keys(subgroups)
+    (data)
+
+  // compute totals per group for annotations
+  const diffTotals = data.map(d => {
+    let tot = 0;
+    subgroups.forEach(k => { if (d[k] != null) tot += +d[k]; });
+    return tot;
+  });
+    
+  // add grand total annotation (sum of all group totals)
+  const grandTotal = diffTotals.reduce((sum, v) => sum + (isNaN(v) ? 0 : v), 0);
+  /*svg.append("text")
+    .attr("x", width)
+    .attr("y", 12)
+    .attr("text-anchor", "end")
+    .style("font-size", "13px")
+    .style("font-weight", "600")
+    .style("fill", "#ffffff")
+    .text("Total: " + grandTotal.toLocaleString('en-US', {maximumFractionDigits:0}));*/
+  
+  const avgValueDiff = (groups && groups.length) ? (grandTotal / groups.length) : 0;
+  svg.append("text")
+    .attr("x", width)
+    .attr("y", 12)
+    .attr("text-anchor", "end")
+    .style("font-size", "12px")
+    .style("font-weight", "600")
+    .style("fill", "#ffffff")
+    .text("Avg: " + avgValueDiff.toLocaleString('en-US', {maximumFractionDigits:0}));
+
+    function mapXLocation(event, rect) {
+			var xoffset = 100;
+
+			if (event.offsetX > (rect.width / 2)) {
+				xoffset = -200;
+			}
+			return event.offsetX + xoffset;
+		}
+
+		function mapYLocation(event, rect) {
+			var yoffset = -10;
+			return event.offsetY + yoffset;
+		}
+  
+  // ----------------
+  // Create a tooltip
+  // ----------------
+  const tooltip = d3.select("#chart_difference")
+    .append("div")
+    .style("opacity", 1)
+    .style("background-color", "{{ theme.CHART_TOOLTIP_BG }}")
+    .attr("class", "tooltip")
+    .style("border", "solid")
+    .style("border-width", "1px")
+    .style("border-radius", "5px")
+    .style("padding", "1px")
+
+  // Three function that change the tooltip when user hover / move / leave a cell
+  const mouseover = function(event, d) {
+
+    let elem = document.querySelector('#chart_difference');
+    let rect = elem.getBoundingClientRect();
+
+    const label = d.data['group'];
+    const subgroupName = d3.select(this.parentNode).datum().key;
+    const subgroupValue = d.data[subgroupName];
+    var total = 0;
+    for (var i = 0; i < subgroups.length; i++)
+    {
+      if ( d.data[subgroups[i]] != null )
+      {
+        total += parseInt(d.data[subgroups[i]]);
+      }
+    }
+
+    var tt = "<table class=\"table table-hover {{ theme.TABLE_CLASS }}\" style=\"border-spacing:0px;padding:0;margin:0;font-size:{{ theme.TABLE_FONT_SIZE_SMALL }};\"><thead><tr><th>Area</th><th>Amount</th><th>Pct</th></tr></thead>";
+    // collect rows, sort by value descending, then render (preserve theme highlight for hovered subgroup)
+    var rows = [];
+    for (var i = 0; i < subgroups.length; i++) {
+      if (d.data[subgroups[i]] != null) {
+        var value = parseFloat(d.data[subgroups[i]]);
+        rows.push({ name: subgroups[i], value: value });
+      }
+    }
+    rows.sort(function(a, b) { return b.value - a.value; });
+    for (var i = 0; i < rows.length; i++) {
+      if (rows[i].value === 0) continue;
+      var row_class = "{{ theme.TABLE_CLASS }}";
+      if (subgroupName == rows[i].name) {
+        row_class = "{{ theme.TABLE_SECONDARY_CLASS }}";
+      }
+      tt += "<tr class=\"" + row_class + "\"><td>" + rows[i].name + "</td><td>" + rows[i].value.toLocaleString('en-US', {maximumFractionDigits:0}) + "</td><td>" + (100*(rows[i].value/total)).toFixed() + "%</td></tr>";
+    }
+    tt += "</table";
+
+    var title = "<center><span class=\"badge {{ theme.BADGE_PRIMARY }}\" style=\"font-size:{{ theme.TABLE_FONT_SIZE }};\">" + label + "</span></center>";
+      title += "<center><span class=\"badge {{ theme.BADGE_PRIMARY }}\" style=\"font-size:{{ theme.TABLE_FONT_SIZE }};\">Total: " + total.toLocaleString('en-US', {maximumFractionDigits:0}) + "</span></center>"
+
+    let rect1 = svg.node().getBBox();
+    var xoffset = mapXLocation(event, rect1);
+    var yoffset = mapYLocation(event, rect1);
+
+    tooltip
+        //.html("Total: " + secondsToMinutes(total) + "<BR>" + subgroupName + " = " + secondsToMinutes(subgroupValue) + " (" + (100*(subgroupValue/total)).toFixed() + "%)")
+        .html(title + tt)
+        .style("opacity", 1)
+		    .style("left", xoffset)
+				.style("top", yoffset)
+        .style("visibility", "visible");
+
+  }
+		const mousemove = function(event, d) {
+
+      /*
+			let rect1 = svg.node().getBBox();
+			var xoffset = mapXLocation(event, rect1);
+			var yoffset = mapYLocation(event, rect1);
+
+			tooltip
+				.style("left", xoffset)
+				.style("top", yoffset)
+				.style("visibility", "visible");
+        */
+		}
+    
+		const mouseleave = function(event, d) {
+			tooltip
+				.style("opacity", 0)
+				.style("visibility", "hidden");
+		}
+
+
+  // Show the bars
+  chart = svg.append("g")
+    .selectAll("g")
+    // Enter in the stack data = loop key per key = group per group
+    .data(stackedData)
+    .join("g")
+      //.attr("fill", d => (d[0] > 0 ? d3.color("red") : d3.color("green")))
+      //.attr("fill", d => color(d.key))
+      // .attr("fill", d => color(d))
+      .selectAll("rect")
+      // enter a second time = loop subgroup per subgroup to add all rectangles
+      .data(d => d)
+      .join("rect")
+        .attr("x", d =>  x(d.data.group))
+        .attr("y", d => y(d[1] < 0 ? d[0] : d[1] ))
+        .attr("height", d => Math.abs(y(d[0]) - y(d[1])))
+        .attr("width",x.bandwidth())
+        .attr("stroke", "grey")
+        .attr("fill", function(d) { return d[1] > 0 ? d3.color("{{ theme.COLOR_GREEN }}") : d3.color("{{ theme.COLOR_RED }}"); })
+      .on("mouseover", mouseover)
+      .on("mousemove", mousemove)
+      .on("mouseleave", mouseleave)
+
+  // add value label for each grouped bar (positive above, negative below zero line)
+  svg.selectAll(".diff-bar-label")
+    .data(diffTotals)
+    .enter()
+    .append("text")
+      .attr("class", "diff-bar-label")
+      .attr("x", (d, i) => x(groups[i]) + x.bandwidth() / 2)
+      .attr("y", d => (d >= 0 ? y(0) - 6 : y(0) + 12))
+      .attr("text-anchor", "middle")
+      .style("font-size", "11px")
+      .style("fill", "white")
+      .style("pointer-events", "none")
+      .text(d => (d == null ? "" : d.toLocaleString('en-US', {maximumFractionDigits:0})));
+
+})
+}
+
+//update_difference(defaultPeriod);
+
+if ( defaultPeriod == "6 Months" )
+{
+  document.getElementById("btnradio1").click();
+}
+else if ( defaultPeriod == "12 Months" )
+{
+  document.getElementById("btnradio2").click();
+}
+else if ( defaultPeriod == "24 Months" )
+{
+  document.getElementById("btnradio3").click();
+}
+else if ( defaultPeriod == "36 Months" )
+{
+  document.getElementById("btnradio4").click();
+}
+else if ( defaultPeriod == "48 Months" )
+{
+  document.getElementById("btnradio5").click();
+}
+else if ( defaultPeriod == "All" )
+{
+  document.getElementById("btnradio6").click();
+}
+else 
+{
+  document.getElementById("btnradio1").click();
+}
+
+    $( document ).ready(function() {
+        resize();
+    });
+
+</script>
+
+
+{% endblock %}
