@@ -64,6 +64,9 @@
              {
                 "regex":".*SAFEWAY.*"
              },
+            {
+                "regex":".*IGA EXPRESS.*"
+             },
              {
                 "regex":".*WOOLWORTHS.*"
              },
@@ -117,6 +120,9 @@
              },
              {
                "regex":".*The Source Bulk Foods.*"
+            },
+                         {
+               "regex":".*COSTCO.*"
             },
              {
                "regex":".*WW METRO.*"
@@ -631,6 +637,9 @@
              {
                 "regex":".*BIG W.*"
              },
+            {
+                "regex":".*BIGW ONLINE.*"
+             },
              {
                 "regex":"MYER  SOUTHLAND.*"
              },
@@ -780,6 +789,12 @@
              },
              {
                "regex":".*AMAZON AU.*"
+            },
+            {
+               "regex":".*IKEA.*"
+            },            
+            {
+               "regex":".*FANTASTIC FURNITURE .*"
             },
             {
                "regex":".*AMAZON MARKETPLACE.*"
@@ -992,6 +1007,9 @@
              },
              {
                "regex":".*Southern Basketball.*"
+            },
+            {
+               "regex":".*SOUTHERN BASKETBAL.*"
             },
              {
                 "regex":".*HIGHETT YOUTH CLUB.*"
@@ -1611,6 +1629,12 @@
              },
              {
                 "regex":".*GAZ MAN.*"
+             },
+            {
+                "regex":".*GAZMAN.*"
+             },
+            {
+                "regex":".*AMICA FAIRFIELD.*"
              },
              {
                "regex":".*Bonds Outlet.*"
@@ -3177,6 +3201,9 @@
             },
             {
                "regex":".*iStock.com.*"
+            },
+            {
+               "regex":".*Melbourne IT.*"
             },
             {
                "regex":".*Adobe.*"

@@ -115,6 +115,26 @@
   </div>
 </div>
 
+<!-- Breakdown modal (used by chart tooltips on click) -->
+<div class="modal fade" id="breakdownModal" tabindex="-1" aria-labelledby="breakdownModalTitle" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content {{ theme.CARD_CLASS }}">
+      <div class="modal-header">
+        <div class="d-flex align-items-center w-100">
+          <div class="flex-grow-1 text-center">
+            <h5 class="modal-title m-0" id="breakdownModalTitle"></h5>
+          </div>
+          <div class="d-flex align-items-center ms-auto">
+            <button type="button" class="btn btn-outline-secondary btn-sm" id="breakdownCopyBtn" onclick="copyBreakdownModalTableToClipboard()">Copy</button>
+            <button type="button" class="btn-close ms-2" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+        </div>
+      </div>
+      <div class="modal-body" id="breakdownModalBody"></div>
+    </div>
+  </div>
+</div>
+
 <script>
 
     var defaultPeriod = "{{ period }}";
@@ -124,6 +144,177 @@
     var current_difference_state = defaultPeriod;
 
     var max_value = 0;
+
+    // -----------------------------
+    // Shared breakdown render helpers
+    // -----------------------------
+    var _breakdownModalInstance = null;
+
+    function getBreakdownModalInstance() {
+      if (_breakdownModalInstance != null) {
+        return _breakdownModalInstance;
+      }
+      var el = document.getElementById('breakdownModal');
+      if (!el || typeof bootstrap === 'undefined' || !bootstrap.Modal) {
+        return null;
+      }
+      _breakdownModalInstance = new bootstrap.Modal(el);
+      return _breakdownModalInstance;
+    }
+
+    function showBreakdownModal(titleHtml, bodyHtml) {
+      var titleEl = document.getElementById('breakdownModalTitle');
+      var bodyEl = document.getElementById('breakdownModalBody');
+      if (titleEl) titleEl.innerHTML = titleHtml;
+      if (bodyEl) bodyEl.innerHTML = bodyHtml;
+
+      // reset copy button label if present
+      var copyBtn = document.getElementById('breakdownCopyBtn');
+      if (copyBtn) {
+        copyBtn.innerText = 'Copy';
+        copyBtn.disabled = false;
+      }
+
+      var modal = getBreakdownModalInstance();
+      if (modal) {
+        modal.show();
+      }
+    }
+
+    function tableToTsv(tableEl) {
+      if (!tableEl) return '';
+      var lines = [];
+      var headerCells = tableEl.querySelectorAll('thead tr th');
+      if (headerCells && headerCells.length) {
+        lines.push(Array.from(headerCells).map(c => (c.innerText || '').trim()).join('\t'));
+      }
+      var bodyRows = tableEl.querySelectorAll('tbody tr');
+      if (bodyRows && bodyRows.length) {
+        bodyRows.forEach(function(tr) {
+          var cells = tr.querySelectorAll('td');
+          if (!cells || !cells.length) return;
+          lines.push(Array.from(cells).map(c => (c.innerText || '').trim()).join('\t'));
+        });
+      } else {
+        // fallback if tbody isn't present
+        var rows = tableEl.querySelectorAll('tr');
+        rows.forEach(function(tr, idx) {
+          if (idx === 0 && headerCells && headerCells.length) return;
+          var cells = tr.querySelectorAll('td');
+          if (!cells || !cells.length) return;
+          lines.push(Array.from(cells).map(c => (c.innerText || '').trim()).join('\t'));
+        });
+      }
+      return lines.join('\n');
+    }
+
+    async function copyTextToClipboard(text) {
+      if (!text) return false;
+      // Preferred API (requires secure context in most browsers)
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(text);
+        return true;
+      }
+      // Fallback
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', '');
+      ta.style.position = 'absolute';
+      ta.style.left = '-9999px';
+      document.body.appendChild(ta);
+      ta.select();
+      ta.setSelectionRange(0, ta.value.length);
+      var ok = false;
+      try {
+        ok = document.execCommand('copy');
+      } catch (e) {
+        ok = false;
+      }
+      document.body.removeChild(ta);
+      return ok;
+    }
+
+    async function copyBreakdownModalTableToClipboard() {
+      var copyBtn = document.getElementById('breakdownCopyBtn');
+      try {
+        var tableEl = document.querySelector('#breakdownModalBody table');
+        var tsv = tableToTsv(tableEl);
+        if (!tsv) {
+          if (copyBtn) copyBtn.innerText = 'No table';
+          return;
+        }
+        if (copyBtn) {
+          copyBtn.disabled = true;
+          copyBtn.innerText = 'Copying...';
+        }
+        var ok = await copyTextToClipboard(tsv);
+        if (copyBtn) {
+          copyBtn.innerText = ok ? 'Copied' : 'Copy failed';
+          setTimeout(function() {
+            copyBtn.innerText = 'Copy';
+            copyBtn.disabled = false;
+          }, 1200);
+        }
+      } catch (e) {
+        if (copyBtn) {
+          copyBtn.innerText = 'Copy failed';
+          copyBtn.disabled = false;
+        }
+      }
+    }
+
+    function buildBreakdownRowsFromDatum(d, subgroups) {
+      var rows = [];
+      for (var i = 0; i < subgroups.length; i++) {
+        var key = subgroups[i];
+        if (d.data[key] != null) {
+          var value = parseFloat(d.data[key]);
+          rows.push({ name: key, value: value });
+        }
+      }
+      rows.sort(function(a, b) { return b.value - a.value; });
+      return rows;
+    }
+
+    function sumSubgroupsFromDatum(d, subgroups) {
+      var total = 0;
+      for (var i = 0; i < subgroups.length; i++) {
+        var key = subgroups[i];
+        if (d.data[key] != null) {
+          total += parseFloat(d.data[key]);
+        }
+      }
+      return total;
+    }
+
+    function renderBreakdownTable(rows, total, hoveredName, opts) {
+      var fontSize = (opts && opts.fontSize) ? opts.fontSize : "12px";
+      var tableClass = (opts && opts.tableClass) ? opts.tableClass : "";
+      var rowClass = (opts && opts.rowClass) ? opts.rowClass : "";
+      var rowHighlightClass = (opts && opts.rowHighlightClass) ? opts.rowHighlightClass : "";
+
+      var tt = "<table class=\"table table-hover " + tableClass + "\" style=\"border-spacing:0px;padding:0;margin:0;font-size:" + fontSize + ";\"><thead><tr><th>Area</th><th>Amount</th><th>Pct</th></tr></thead>";
+      for (var i = 0; i < rows.length; i++) {
+        if (rows[i].value === 0) continue;
+        var cls = rowClass;
+        if (hoveredName && rows[i].name === hoveredName && rowHighlightClass) {
+          cls = rowHighlightClass;
+        }
+        var pct = (total && total !== 0) ? (100 * (rows[i].value / total)).toFixed() : "0";
+        tt += "<tr class=\"" + cls + "\"><td>" + rows[i].name + "</td><td>" + rows[i].value.toLocaleString('en-US', {maximumFractionDigits:0}) + "</td><td>" + pct + "%</td></tr>";
+      }
+      tt += "</table>";
+      return tt;
+    }
+
+    function renderBreakdownTitle(label, total, opts) {
+      var badgeClass = (opts && opts.badgeClass) ? opts.badgeClass : "bg-primary";
+      var badgeFontSize = (opts && opts.badgeFontSize) ? opts.badgeFontSize : "14px";
+
+      var title = "<center><span class=\"badge " + badgeClass + "\" style=\"font-size:" + badgeFontSize + ";\">" + label + "</span></center>";
+      title += "<center><span class=\"badge " + badgeClass + "\" style=\"font-size:" + badgeFontSize + ";\">Total: " + total.toLocaleString('en-US', {maximumFractionDigits:0}) + "</span></center>";
+      return title;
+    }
 
     function update_charts(period) {
         update_spend(period);
@@ -426,43 +617,20 @@
       const label = d.data['group'];
       const subgroupName = d3.select(this.parentNode).datum().key;
       const subgroupValue = d.data[subgroupName];
-      var total = 0;
-      for (var i = 0; i < subgroups.length; i++)
-      {
-        if ( d.data[subgroups[i]] != null )
-        {
-          total += parseInt(d.data[subgroups[i]]);
-        }
-      }
+      var total = sumSubgroupsFromDatum(d, subgroups);
+      var rows = buildBreakdownRowsFromDatum(d, subgroups);
 
-      var tt = "<table class=\"table table-hover {{ theme.TABLE_CLASS }}\" style=\"border-spacing:0px;padding:0;margin:0;font-size:{{ theme.TABLE_FONT_SIZE_SMALL }};\"><thead><tr><th>Area</th><th>Amount</th><th>Pct</th></tr></thead>";
-      // collect rows, sort by value descending, then render (preserve highlight for hovered subgroup)
-      var rows = [];
-      for (var i = 0; i < subgroups.length; i++) {
-        if (d.data[subgroups[i]] != null) {
-          var value = parseFloat(d.data[subgroups[i]]);
-          rows.push({ name: subgroups[i], value: value });
-        }
-      }
-      rows.sort(function(a, b) { return b.value - a.value; });
-      for (var i = 0; i < rows.length; i++) {
-        if (rows[i].value === 0) continue;
-        var row_class = "table-light";
-        if (subgroupName == rows[i].name) {
-          row_class = "table-secondary";
-        }
-        tt += "<tr class=\"" + row_class + "\"><td>" + rows[i].name + "</td><td>" + rows[i].value.toLocaleString('en-US', {maximumFractionDigits:0}) + "</td><td>" + (100*(rows[i].value/total)).toFixed() + "%</td></tr>";
-      }
-      tt += "</table";
+      var opts = {
+        tableClass: "{{ theme.TABLE_CLASS }}",
+        fontSize: "{{ theme.TABLE_FONT_SIZE_SMALL }}",
+        rowClass: "table-light",
+        rowHighlightClass: "table-secondary",
+        badgeClass: "{{ theme.BADGE_PRIMARY }}",
+        badgeFontSize: "{{ theme.TABLE_FONT_SIZE }}"
+      };
 
-      var x = (event.offsetX/2-200);
-      if ( event.offsetX < rect.width/2 )
-      {
-        x = (event.offsetX/2)+200;;
-      }
-
-      var title = "<center><span class=\"badge {{ theme.BADGE_PRIMARY }}\" style=\"font-size:{{ theme.TABLE_FONT_SIZE }};\">" + label + "</span></center>";
-      title += "<center><span class=\"badge {{ theme.BADGE_PRIMARY }}\" style=\"font-size:{{ theme.TABLE_FONT_SIZE }};\">Total: " + total.toLocaleString('en-US', {maximumFractionDigits:0}) + "</span></center>"
+      var tt = renderBreakdownTable(rows, total, subgroupName, opts);
+      var title = renderBreakdownTitle(label, total, opts);
 
     let rect1 = svg.node().getBBox();
     var xoffset = mapXLocation(event, rect1);
@@ -476,6 +644,31 @@
 				.style("top", yoffset)
         .style("visibility", "visible");
   
+    }
+
+    const barclick = function(event, d) {
+      const label = d.data['group'];
+      const subgroupName = d3.select(this.parentNode).datum().key;
+      var total = sumSubgroupsFromDatum(d, subgroups);
+      var rows = buildBreakdownRowsFromDatum(d, subgroups);
+
+      // Modal wants alphabetical rows (tooltip remains value-sorted)
+      var rowsAlpha = rows.slice().sort(function(a, b) {
+        return (a.name || '').localeCompare((b.name || ''));
+      });
+
+      var opts = {
+        tableClass: "{{ theme.TABLE_CLASS }}",
+        fontSize: "{{ theme.TABLE_FONT_SIZE_SMALL }}",
+        rowClass: "table-light",
+        rowHighlightClass: "table-secondary",
+        badgeClass: "{{ theme.BADGE_PRIMARY }}",
+        badgeFontSize: "{{ theme.TABLE_FONT_SIZE }}"
+      };
+
+      var title = renderBreakdownTitle(label, total, opts);
+      var body = renderBreakdownTable(rowsAlpha, total, subgroupName, opts);
+      showBreakdownModal(title, body);
     }
     const mousemove = function(event, d) {
       // tooltip.style("transform","translateY(-55%)")
@@ -522,6 +715,7 @@
         .on("mouseover", mouseover)
         .on("mousemove", mousemove)
         .on("mouseleave", mouseleave)
+        .on("click", barclick)
 
     svg.append("path")
       .datum(ma)
@@ -746,37 +940,20 @@
     const label = d.data['group'];
     const subgroupName = d3.select(this.parentNode).datum().key;
     const subgroupValue = d.data[subgroupName];
-    var total = 0;
-    for (var i = 0; i < subgroups.length; i++)
-    {
-      if ( d.data[subgroups[i]] != null )
-      {
-        total += parseInt(d.data[subgroups[i]]);
-      }
-    }
+    var total = sumSubgroupsFromDatum(d, subgroups);
+    var rows = buildBreakdownRowsFromDatum(d, subgroups);
 
-    var tt = "<table class=\"table table-hover {{ theme.TABLE_CLASS }}\" style=\"border-spacing:0px;padding:0;margin:0;font-size:{{ theme.TABLE_FONT_SIZE_SMALL }};\"><thead><tr><th>Area</th><th>Amount</th><th>Pct</th></tr></thead>";
-    // collect rows, sort by value descending, then render (preserve theme highlight for hovered subgroup)
-    var rows = [];
-    for (var i = 0; i < subgroups.length; i++) {
-      if (d.data[subgroups[i]] != null) {
-        var value = parseFloat(d.data[subgroups[i]]);
-        rows.push({ name: subgroups[i], value: value });
-      }
-    }
-    rows.sort(function(a, b) { return b.value - a.value; });
-    for (var i = 0; i < rows.length; i++) {
-      if (rows[i].value === 0) continue;
-      var row_class = "{{ theme.TABLE_CLASS }}";
-      if (subgroupName == rows[i].name) {
-        row_class = "{{ theme.TABLE_SECONDARY_CLASS }}";
-      }
-      tt += "<tr class=\"" + row_class + "\"><td>" + rows[i].name + "</td><td>" + rows[i].value.toLocaleString('en-US', {maximumFractionDigits:0}) + "</td><td>" + (100*(rows[i].value/total)).toFixed() + "%</td></tr>";
-    }
-    tt += "</table";
+    var opts = {
+      tableClass: "{{ theme.TABLE_CLASS }}",
+      fontSize: "{{ theme.TABLE_FONT_SIZE_SMALL }}",
+      rowClass: "{{ theme.TABLE_CLASS }}",
+      rowHighlightClass: "{{ theme.TABLE_SECONDARY_CLASS }}",
+      badgeClass: "{{ theme.BADGE_PRIMARY }}",
+      badgeFontSize: "{{ theme.TABLE_FONT_SIZE }}"
+    };
 
-    var title = "<center><span class=\"badge {{ theme.BADGE_PRIMARY }}\" style=\"font-size:{{ theme.TABLE_FONT_SIZE }};\">" + label + "</span></center>";
-      title += "<center><span class=\"badge {{ theme.BADGE_PRIMARY }}\" style=\"font-size:{{ theme.TABLE_FONT_SIZE }};\">Total: " + total.toLocaleString('en-US', {maximumFractionDigits:0}) + "</span></center>"
+    var tt = renderBreakdownTable(rows, total, subgroupName, opts);
+    var title = renderBreakdownTitle(label, total, opts);
 
     let rect1 = svg.node().getBBox();
     var xoffset = mapXLocation(event, rect1);
@@ -811,6 +988,32 @@
 				.style("visibility", "hidden");
 		}
 
+    const barclick = function(event, d) {
+      const label = d.data['group'];
+      const subgroupName = d3.select(this.parentNode).datum().key;
+
+      var total = sumSubgroupsFromDatum(d, subgroups);
+      var rows = buildBreakdownRowsFromDatum(d, subgroups);
+
+      // Modal wants alphabetical rows (tooltip remains value-sorted)
+      var rowsAlpha = rows.slice().sort(function(a, b) {
+        return (a.name || '').localeCompare((b.name || ''));
+      });
+
+      var opts = {
+        tableClass: "{{ theme.TABLE_CLASS }}",
+        fontSize: "{{ theme.TABLE_FONT_SIZE_SMALL }}",
+        rowClass: "{{ theme.TABLE_CLASS }}",
+        rowHighlightClass: "{{ theme.TABLE_SECONDARY_CLASS }}",
+        badgeClass: "{{ theme.BADGE_PRIMARY }}",
+        badgeFontSize: "{{ theme.TABLE_FONT_SIZE }}"
+      };
+
+      var title = renderBreakdownTitle(label, total, opts);
+      var body = renderBreakdownTable(rowsAlpha, total, subgroupName, opts);
+      showBreakdownModal(title, body);
+    }
+
 
   // Show the bars
   chart = svg.append("g")
@@ -834,6 +1037,7 @@
       .on("mouseover", mouseover)
       .on("mousemove", mousemove)
       .on("mouseleave", mouseleave)
+      .on("click", barclick)
 
   // add value label for each grouped bar (positive above, negative below zero line)
   svg.selectAll(".diff-bar-label")
