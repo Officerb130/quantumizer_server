@@ -2,45 +2,28 @@
 
 {% block content %}
 
-<!-- <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.css">
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap4.min.css"> -->
-<script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
-<script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap4.min.js"></script>
+<!-- AG Grid Community (CDN) - v33+ Theming API (no legacy CSS themes) -->
+<script src="https://cdn.jsdelivr.net/npm/ag-grid-community/dist/ag-grid-community.min.noStyle.js"></script>
+
+<!-- Google Font: Noto Sans -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto Sans:wght@400;700&display=swap" rel="stylesheet">
 
 <style type="text/css">
 
-  .right-aligned-cell {
-    text-align: right;
-  }
-
-  table td.text-right {
-    text-align: right;
-  }
-  
-  table td.numcol {
-    text-align : right;
-  }
-
-  .blue {
-    color: inherit;
-  }
-
-  /* Selected row highlight for DataTables */
-  table.dataTable tbody tr.highlight > td {
+  /* AG Grid selection = yellow text only */
+  .ag-grid-host .ag-row-selected,
+  .ag-grid-host .ag-row-selected .ag-cell {
     background-color: inherit !important;
+  }
+
+  .ag-grid-host .ag-row-selected .ag-cell {
     color: #ffff00 !important;
   }
 
-  table.dataTable tbody tr.highlight > td a {
-    color: #ffff00 !important;
-  }
-
-  /* Hover highlight (mouse over) in all grids: dark background */
-  #transaction_total_table tbody tr:hover:not(.highlight) > *,
-  #transaction_summary_group_table tbody tr:hover:not(.highlight) > *,
-  #transaction_summary_class_table tbody tr:hover:not(.highlight) > *,
-  #transaction_table tbody tr:hover:not(.highlight) > * {
-    --bs-table-accent-bg: rgba(0, 0, 0, 0.35) !important;
+  /* AG Grid hover highlight = dark */
+  .ag-grid-host .ag-row-hover:not(.ag-row-selected) .ag-cell {
     background-color: rgba(0, 0, 0, 0.35) !important;
   }
 
@@ -57,16 +40,16 @@
     border-color: rgba(255,255,255,0.15) !important;
   }
   
-  .noBorder {
-      border: 0px;
-      padding:0; 
-      margin:0;
-      border-collapse: collapse;
+  /* Fit with existing layout + use Google Font */
+  .ag-grid-host {
+    font-family: 'Noto Sans', serif;
   }
 
-  .table {
-    color: white;
-    background-color: #eeeeee;
+  /* AG Grid theme CSS sets its own font; override it to match the app font. */
+  .ag-grid-host .ag-root-wrapper,
+  .ag-grid-host .ag-root-wrapper * {
+    font-family: 'Noto Sans', serif !important;
+    font-size: inherit !important;
   }
 
   /* table.dataTable tbody tr.selected {
@@ -117,9 +100,10 @@ $(document).ready( function () {
       setSelectedValue(objSelect, select);
     }
 
-    // Apply theme font size via JS to avoid inline-style parsing issues with templating
-    var tableFontSize = "{{ theme.TABLE_FONT_SIZE }}";
-    $('#transaction_total_table, #transaction_summary_group_table, #transaction_summary_class_table, #transaction_table').css('font-size', tableFontSize);
+    // Apply configured table font size to AG Grid containers (avoid Jinja in CSS).
+    $('.ag-grid-host').css('font-size', "{{ theme.TABLE_FONT_SIZE }}");
+
+    initGrids();
     SyncData();
   }
 });
@@ -130,8 +114,164 @@ function SyncData()
   loadSummaryGroupTable();
 }
 
-function clearHighlightsForTable(tableSelector) {
-  $(tableSelector + ' tbody tr').removeClass('highlight');
+// -----------------------------
+// AG Grid instances
+// -----------------------------
+var totalGridApi = null;
+var monthGridApi = null;
+var classGridApi = null;
+var txnGridApi = null;
+
+function setGridRows(api, rows) {
+  if (!api) return;
+  if (typeof api.setRowData === 'function') {
+    api.setRowData(rows || []);
+    return;
+  }
+  if (typeof api.setGridOption === 'function') {
+    api.setGridOption('rowData', rows || []);
+    return;
+  }
+}
+
+function clearGrid(api) {
+  setGridRows(api, []);
+}
+
+function fmtAmount(v) {
+  var num = (typeof v === 'number') ? v : parseFloat(v);
+  if (isNaN(num)) num = 0;
+  return num.toLocaleString('en-US', { maximumFractionDigits: 0 });
+}
+
+function initGrids() {
+  if (typeof agGrid === 'undefined' || (typeof agGrid.createGrid !== 'function' && typeof agGrid.Grid !== 'function')) {
+    return;
+  }
+
+  // v33+ Theming API: Quartz base + dark color scheme.
+  var gridTheme = agGrid.themeQuartz.withPart(agGrid.colorSchemeDark);
+
+  function createGridApi(el, options) {
+    if (!el) return null;
+    // Prefer legacy constructor when present (avoids theming API conflicts with CSS themes).
+    if (typeof agGrid.Grid === 'function') {
+      new agGrid.Grid(el, options);
+      return options.api || null;
+    }
+    if (typeof agGrid.createGrid === 'function') {
+      // Ensure the theme class on the grid div is used (avoid an inner wrapper div without theme).
+      return agGrid.createGrid(el, options, { setThemeOnGridDiv: true });
+    }
+    return null;
+  }
+
+  var defaultColDef = {
+    sortable: true,
+    resizable: true,
+    filter: false
+  };
+
+  var totalOptions = {
+    theme: gridTheme,
+    defaultColDef: defaultColDef,
+    rowSelection: 'single',
+    suppressCellFocus: true,
+    rowData: [],
+    columnDefs: [
+      { headerName: 'Group', field: 'group', flex: 1 },
+      { headerName: 'Amount', field: 'amount', width: 120, valueFormatter: function(p){ return fmtAmount(p.value); } }
+    ],
+    onRowClicked: function(e) {
+      if (!e || !e.data) return;
+      // selecting a group resets downstream
+      clearGrid(classGridApi);
+      clearGrid(txnGridApi);
+      loadSummaryGroupTable(e.data.group);
+    }
+  };
+
+  var monthOptions = {
+    theme: gridTheme,
+    defaultColDef: defaultColDef,
+    rowSelection: 'single',
+    suppressCellFocus: true,
+    rowData: [],
+    columnDefs: [
+      { headerName: 'Group', field: 'group', width: 140 },
+      { headerName: 'Date', field: 'month', width: 110 },
+      { headerName: 'Amount', field: 'amount', width: 120, valueFormatter: function(p){ return fmtAmount(p.value); } }
+    ],
+    onRowClicked: function(e) {
+      if (!e || !e.data) return;
+      var dtStart = parseDate(e.data.month + "-01");
+      var dtEnd = new Date(dtStart.getFullYear(), dtStart.getMonth() + 1, 0);
+      loadSummaryClassTable(e.data.group, formatDate(dtStart), formatDate(dtEnd));
+      loadTransactionTable(null, e.data.group, formatDate(dtStart), formatDate(dtEnd));
+    }
+  };
+
+  var classOptions = {
+    theme: gridTheme,
+    defaultColDef: defaultColDef,
+    rowSelection: 'single',
+    suppressCellFocus: true,
+    rowData: [],
+    columnDefs: [
+      { headerName: 'Class', field: 'className', flex: 1 },
+      { headerName: 'Date', field: 'month', width: 110 },
+      { headerName: 'Amount', field: 'amount', width: 120, valueFormatter: function(p){ return fmtAmount(p.value); } }
+    ],
+    onRowClicked: function(e) {
+      if (!e || !e.data) return;
+      var dtStart = parseDate(e.data.month + "-01");
+      var dtEnd = new Date(dtStart.getFullYear(), dtStart.getMonth() + 1, 0);
+      loadTransactionTable(e.data.className, null, formatDate(dtStart), formatDate(dtEnd));
+    }
+  };
+
+  var txnOptions = {
+    theme: gridTheme,
+    defaultColDef: defaultColDef,
+    rowSelection: 'single',
+    suppressCellFocus: true,
+    rowData: [],
+    columnDefs: [
+      { headerName: 'ID', field: 'id', width: 90, hide: true },
+      { headerName: 'Date', field: 'date', width: 120 },
+      { headerName: 'Description', field: 'description', flex: 1, minWidth: 200 },
+      { headerName: 'Amount', field: 'amount', width: 120, sort: 'asc', valueFormatter: function(p){ return fmtAmount(p.value); } },
+      { headerName: 'Class', field: 'className', width: 140 },
+      { headerName: 'Group', field: 'groupName', width: 140 },
+      { headerName: 'Source', field: 'source', width: 140 },
+      { headerName: 'Type', field: 'type', width: 140 }
+    ],
+    onRowClicked: function(e) {
+      if (!e || !e.data) return;
+      // modal expects the legacy array order
+      var legacyRow = [
+        e.data.id,
+        e.data.date,
+        e.data.description,
+        e.data.amount,
+        e.data.className,
+        e.data.groupName,
+        e.data.source,
+        e.data.type
+      ];
+      showDescriptionRegexModal(legacyRow);
+    }
+  };
+
+  var totalEl = document.getElementById('transaction_total_grid');
+  var monthEl = document.getElementById('transaction_summary_group_grid');
+  var classEl = document.getElementById('transaction_summary_class_grid');
+  var txnEl = document.getElementById('transaction_grid');
+
+  totalGridApi = createGridApi(totalEl, totalOptions);
+  monthGridApi = createGridApi(monthEl, monthOptions);
+  classGridApi = createGridApi(classEl, classOptions);
+  txnGridApi = createGridApi(txnEl, txnOptions);
 }
 
 // -----------------------------
@@ -279,293 +419,124 @@ function showDescriptionRegexModal(row) {
   if (modal) modal.show();
 }
 
-function loadTotalTable()
-{
-  var t_period = getSelectedValue(document.getElementById("myform").period);
-  var trans_type = getSelectedValue(document.getElementById("myform").t_type);
-    
-  d3.json("api/transaction_total", {
-    method:"POST",
-    body: JSON.stringify({period: t_period, t_type: trans_type }), 
+function loadTotalTable() {
+  var t_period = getSelectedValue(document.getElementById('myform').period);
+  var trans_type = getSelectedValue(document.getElementById('myform').t_type);
+
+  return d3.json('api/transaction_total', {
+    method: 'POST',
+    body: JSON.stringify({ period: t_period, t_type: trans_type }),
     headers: {
-      "Content-type": "application/json; charset=UTF-8",
-      "Authorization" : "Bearer " + getCookie("access-token")
+      'Content-type': 'application/json; charset=UTF-8',
+      'Authorization': 'Bearer ' + getCookie('access-token')
     }
-  }).then( function(data_json) {
-
-  var dataSet = data_json['results'];
-
-  var table = $('#transaction_total_table').DataTable(
-      {
-        "bInfo": false,
-        "autoWidth": true,
-        "bFilter": false,
-        "bLengthChange": false,
-        "paging": false,
-        "pageLength": 17,
-        "order": [[ 0, 'asc' ]],      
-        "columnDefs": [
-            { "width": "150px", "targets": 0 },
-            { "width": "100px",  "targets": 1 },
-            {
-                "render": function ( data, type, row ) {
-                    return row[1].toLocaleString('en-US', {maximumFractionDigits:0}) 
-                },
-                "targets": 1
-            },
-        ],
-        "data": dataSet,
-        "columns": [
-          { "title": 'Group' },
-          { "title": 'Amount' },
-        ],
-      });
-
-      $('#transaction_total_table').off('click', 'tr');
-      $('#transaction_total_table').on('click', 'tr', function () {
-        var row = table.row(this).data();
-        clearHighlightsForTable('#transaction_total_table');
-        $(table.row(this).nodes()).addClass('highlight');
-
-        removeTransactionTable();
-        removeSummaryClassTable();
-        loadSummaryGroupTable(row[0]);
-      });
-
-      // $("#transaction_total_table tbody tr").each(function() { $(this).find('td:eq(1)').addClass('text-right'); });
-
+  }).then(function(data_json) {
+    var rows = (data_json && data_json['results'] ? data_json['results'] : []).map(function(r) {
+      return { group: r[0], amount: +r[1] };
     });
-
-    $("#transaction_total_table").show();
-  }
-
-var summaryGroupTable = null;
-  
-function loadSummaryGroupTable(group_filter = null)
-{
-  var t_period = getSelectedValue(document.getElementById("myform").period);
-  var trans_type = getSelectedValue(document.getElementById("myform").t_type);
-    
-  d3.json("api/transaction_summary", {
-    method:"POST",
-    body: JSON.stringify({period: t_period, t_type: trans_type, t_group : group_filter, group_by : "group"}), 
-    headers: {
-      "Content-type": "application/json; charset=UTF-8",
-      "Authorization" : "Bearer " + getCookie("access-token")
-    }
-  }).then( function(data_json) {
-
-  var dataSet = data_json['results'];
-
-  if ( summaryGroupTable != null ) {
-    summaryGroupTable.destroy();
-    summaryGroupTable = null;
-  }
-
-  summaryGroupTable = $('#transaction_summary_group_table').DataTable(
-      {
-        "bInfo": false,
-        "autoWidth": true,
-        "bFilter": false,
-        "bLengthChange": false,
-        "paging": false,
-        "pageLength": 17,
-        "order": [[ 0, 'asc' ],[ 1, 'asc' ]],      
-        "columnDefs": [
-            { "width": "120px", "targets": 0 },
-            { "width": "100px", "targets": 1 },
-            // { "width": "100px", "targets": 2 },
-            {
-                "render": function ( data, type, row ) {
-                    return row[2].toLocaleString('en-US', {maximumFractionDigits:0}) 
-                    //return roundNumber(row[2],0);
-                },
-                "targets": 2
-            },
-        ],
-        "data": dataSet,
-        "columns": [
-            { "title": 'Group' },
-            { "title": 'Date' },
-            { "title": 'Amount' },
-        ],
-      });
-
-        $('#transaction_summary_group_table').off('click', 'tr');
-        $('#transaction_summary_group_table').on('click', 'tr', function () {
-        var row = summaryGroupTable.row(this).data();
-        var dtStart = parseDate(row[1] + "-01");
-        var dtEnd = new Date(dtStart.getFullYear(), dtStart.getMonth()+1, 0);
-        clearHighlightsForTable('#transaction_summary_group_table');
-        $(summaryGroupTable.row(this).nodes()).addClass('highlight');
-        removeTransactionTable();
-        loadSummaryClassTable(row[0], formatDate(dtStart), formatDate(dtEnd));
-        loadTransactionTable(null, row[0], formatDate(dtStart), formatDate(dtEnd));
-      });
-
-      $("#transaction_summary_group_table tbody tr").each(function() { $(this).find('td:eq(2)').addClass('text-right'); });
-    });
-
-    $("#transaction_summary_group_table").show();
-  }
-
-var summaryClassTable = null;
-
-function removeSummaryClassTable() {
-  if ( summaryClassTable != null ) {
-    summaryClassTable.clear();
-    summaryClassTable.destroy();
-    summaryClassTable = null;
-  }
-}
-  
-function loadSummaryClassTable(group_filter = null, start_date = null, end_date = null)
-{
-  var t_period = getSelectedValue(document.getElementById("myform").period);
-  var trans_type = getSelectedValue(document.getElementById("myform").t_type);
-
-  d3.json("api/transaction_summary", {
-    method:"POST",
-    body: JSON.stringify({period: t_period, t_type: trans_type, t_group : group_filter, group_by : "class", start_date : start_date, end_date: end_date}), 
-    headers: {
-      "Content-type": "application/json; charset=UTF-8",
-      "Authorization" : "Bearer " + getCookie("access-token")
-    }
-  }).then( function(data_json) {
-
-  var dataSet = data_json['results'];
-
-  removeSummaryClassTable();
-
-  summaryClassTable = $('#transaction_summary_class_table').DataTable(
-      {
-        "bInfo": false,
-        "autoWidth": true,
-        "bFilter": false,
-        "bLengthChange": false,
-        "paging": false,
-        "pageLength": 17,
-        "order": [[ 0, 'asc' ],[ 1, 'asc' ]],      
-        "columnDefs": [
-            // { "width": "150px", "targets": 0 },
-            { "visible": false, "targets": 1 },
-            // { "width": "100px", "targets": 2 },
-            {
-                "render": function ( data, type, row ) {
-                    return row[2].toLocaleString('en-US', {maximumFractionDigits:0}) 
-                    //return roundNumber(row[2],0);
-                },
-                "targets": 2
-            },
-        ],
-        "data": dataSet,
-        "columns": [
-            { "title": 'Class' },
-            { "title": 'Date' },
-            { "title": 'Amount' },
-        ],
-      });
-
-    $('#transaction_summary_class_table').off('click', 'tr');
-    $('#transaction_summary_class_table').on('click', 'tr', function () {
-      var row = summaryClassTable.row(this).data();
-      clearHighlightsForTable('#transaction_summary_class_table');
-      $(summaryClassTable.row(this).nodes()).addClass('highlight');
-      // console.log(summaryClassTable.row(this).data());
-      var dtStart = parseDate(row[1] + "-01");
-      var dtEnd = new Date(dtStart.getFullYear(), dtStart.getMonth()+1, 0);
-      loadTransactionTable(row[0], null, formatDate(dtStart), formatDate(dtEnd));
-    });
-
-
-
-      $("#transaction_summary_class_table tbody tr").each(function() { $(this).find('td:eq(2)').addClass('text-right'); });
-    });
-
-
-
-    $("#transaction_summary_class_table").show();
-  }
-
-
-
-var transactionTable = null;
-
-function removeTransactionTable() {
-  if ( transactionTable != null ) {
-      transactionTable.clear();
-      transactionTable.destroy();
-      transactionTable = null;
-    }
+    setGridRows(totalGridApi, rows);
+  });
 }
 
-function loadTransactionTable(class_filter = null, group_filter = null, start_date = null, end_date = null)
-{
-  var t_period = getSelectedValue(document.getElementById("myform").period);
-  var trans_type = getSelectedValue(document.getElementById("myform").t_type);
+function loadSummaryGroupTable(group_filter) {
+  if (typeof group_filter === 'undefined') group_filter = null;
 
-  console.log(JSON.stringify({period: t_period, t_type: trans_type, t_class : class_filter, t_group : group_filter, start_date : start_date, end_date: end_date }));
-    
-  d3.json("api/transaction_search", {
-    method:"POST",
-    body: JSON.stringify({period: t_period, t_type: trans_type, t_class : class_filter, t_group : group_filter, start_date : start_date, end_date: end_date }), 
+  var t_period = getSelectedValue(document.getElementById('myform').period);
+  var trans_type = getSelectedValue(document.getElementById('myform').t_type);
+
+  return d3.json('api/transaction_summary', {
+    method: 'POST',
+    body: JSON.stringify({ period: t_period, t_type: trans_type, t_group: group_filter, group_by: 'group' }),
     headers: {
-      "Content-type": "application/json; charset=UTF-8",
-      "Authorization" : "Bearer " + getCookie("access-token")
+      'Content-type': 'application/json; charset=UTF-8',
+      'Authorization': 'Bearer ' + getCookie('access-token')
     }
-  }).then( function(data_json) {
-
-  removeTransactionTable();
-
-  var dataSet = data_json['results'];
-
-  transactionTable = $('#transaction_table').DataTable(
-      {
-        "bInfo": false,
-        "autoWidth": true,
-        "bFilter": false,
-        "bLengthChange": false,
-        "paging": false,
-        "pageLength": 12,
-        "order": [[ 3, 'asc' ]],
-        "columnDefs": [
-          // { "width": "150px", "targets": 0 },
-          { "width": "100px", "targets": 3 },
-          // { "width": "100px", "targets": 2 },
-          {
-            "render": function ( data, type, row ) {
-              var v = row[3];
-              var num = (typeof v === 'number') ? v : parseFloat(v);
-              if (type === 'sort' || type === 'type') {
-                return isNaN(num) ? 0 : num;
-              }
-              return (isNaN(num) ? 0 : num).toLocaleString('en-US', {maximumFractionDigits:0})
-            },
-            "targets": 3
-          },
-        ],
-        "data": dataSet,
-        "columns": [
-            { "title": 'ID' },
-            { "title": 'Date' },
-            { "title": 'Description' },
-            { "title": 'Amount' },
-            { "title": 'Class' },
-            { "title": 'Group' },
-          { "title": 'Source' },
-        ],
-      });
-
-      $('#transaction_table').off('click', 'tr');
-      $('#transaction_table').on('click', 'tr', function () {
-        var row = transactionTable.row(this).data();
-        if (!row) return;
-        showDescriptionRegexModal(row);
-      });
-
+  }).then(function(data_json) {
+    var rows = (data_json && data_json['results'] ? data_json['results'] : []).map(function(r) {
+      return { group: r[0], month: r[1], amount: +r[2] };
     });
-    $("#transaction_table").show();
-  }
+    setGridRows(monthGridApi, rows);
+  });
+}
+
+function loadSummaryClassTable(group_filter, start_date, end_date) {
+  if (typeof group_filter === 'undefined') group_filter = null;
+  if (typeof start_date === 'undefined') start_date = null;
+  if (typeof end_date === 'undefined') end_date = null;
+
+  var t_period = getSelectedValue(document.getElementById('myform').period);
+  var trans_type = getSelectedValue(document.getElementById('myform').t_type);
+
+  return d3.json('api/transaction_summary', {
+    method: 'POST',
+    body: JSON.stringify({
+      period: t_period,
+      t_type: trans_type,
+      t_group: group_filter,
+      group_by: 'class',
+      start_date: start_date,
+      end_date: end_date
+    }),
+    headers: {
+      'Content-type': 'application/json; charset=UTF-8',
+      'Authorization': 'Bearer ' + getCookie('access-token')
+    }
+  }).then(function(data_json) {
+    var rows = (data_json && data_json['results'] ? data_json['results'] : []).map(function(r) {
+      return { className: r[0], month: r[1], amount: +r[2] };
+    });
+    setGridRows(classGridApi, rows);
+  });
+}
+
+function loadTransactionTable(class_filter, group_filter, start_date, end_date) {
+  if (typeof class_filter === 'undefined') class_filter = null;
+  if (typeof group_filter === 'undefined') group_filter = null;
+  if (typeof start_date === 'undefined') start_date = null;
+  if (typeof end_date === 'undefined') end_date = null;
+
+  var t_period = getSelectedValue(document.getElementById('myform').period);
+  var trans_type = getSelectedValue(document.getElementById('myform').t_type);
+
+  console.log(JSON.stringify({
+    period: t_period,
+    t_type: trans_type,
+    t_class: class_filter,
+    t_group: group_filter,
+    start_date: start_date,
+    end_date: end_date
+  }));
+
+  return d3.json('api/transaction_search', {
+    method: 'POST',
+    body: JSON.stringify({
+      period: t_period,
+      t_type: trans_type,
+      t_class: class_filter,
+      t_group: group_filter,
+      start_date: start_date,
+      end_date: end_date
+    }),
+    headers: {
+      'Content-type': 'application/json; charset=UTF-8',
+      'Authorization': 'Bearer ' + getCookie('access-token')
+    }
+  }).then(function(data_json) {
+    var rows = (data_json && data_json['results'] ? data_json['results'] : []).map(function(r) {
+      return {
+        id: r[0],
+        date: r[1],
+        description: r[2],
+        amount: +r[3],
+        className: r[4],
+        groupName: r[5],
+        source: r[6],
+        type: r[7]
+      };
+    });
+    setGridRows(txnGridApi, rows);
+  });
+}
 
 function sanitizeTsvCell(v) {
   if (v == null) return '';
@@ -573,24 +544,29 @@ function sanitizeTsvCell(v) {
 }
 
 function buildTransactionTableTsv() {
-  if (!transactionTable) return '';
-  var header = ['ID', 'Date', 'Description', 'Amount', 'Class', 'Group', 'Source'];
+  if (!txnGridApi) return '';
+  var header = ['ID', 'Date', 'Description', 'Amount', 'Class', 'Group', 'Source', 'Type'];
   var lines = [header.join('\t')];
-  var rows = transactionTable.rows({ search: 'applied' }).data().toArray();
-  for (var i = 0; i < rows.length; i++) {
-    var r = rows[i] || [];
-    var amount = r[3];
-    var num = (typeof amount === 'number') ? amount : parseFloat(amount);
-    var amountText = (isNaN(num) ? 0 : num).toLocaleString('en-US', { maximumFractionDigits: 0 });
-    lines.push([
-      sanitizeTsvCell(r[0]),
-      sanitizeTsvCell(r[1]),
-      sanitizeTsvCell(r[2]),
-      sanitizeTsvCell(amountText),
-      sanitizeTsvCell(r[4]),
-      sanitizeTsvCell(r[5])
-      ,sanitizeTsvCell(r[6])
-    ].join('\t'));
+
+  var iter = (typeof txnGridApi.forEachNodeAfterFilterAndSort === 'function')
+    ? txnGridApi.forEachNodeAfterFilterAndSort.bind(txnGridApi)
+    : (typeof txnGridApi.forEachNode === 'function' ? txnGridApi.forEachNode.bind(txnGridApi) : null);
+
+  if (iter) {
+    iter(function(node) {
+      if (!node || !node.data) return;
+      var d = node.data;
+      lines.push([
+        sanitizeTsvCell(d.id),
+        sanitizeTsvCell(d.date),
+        sanitizeTsvCell(d.description),
+        sanitizeTsvCell(fmtAmount(d.amount)),
+        sanitizeTsvCell(d.className),
+        sanitizeTsvCell(d.groupName),
+        sanitizeTsvCell(d.source),
+        sanitizeTsvCell(d.type)
+      ].join('\t'));
+    });
   }
   return lines.join('\n');
 }
@@ -705,8 +681,7 @@ async function copyTransactionTableToClipboard() {
     <div class="card {{ CARD_CLASS }} mb-2">
       <div class="card-header">Group Total</div>
       <div class="card-body">
-        <table id="transaction_total_table" class="table table-striped order-column table-condensed dt-responsive nowrap {{ theme.TABLE_CLASS }}" style="width:100%;" cellspacing="0" cellpadding="0">
-        </table>
+        <div id="transaction_total_grid" class="ag-grid-host" style="width:100%;height:600px;"></div>
       </div>
     </div>
   </div>
@@ -715,8 +690,7 @@ async function copyTransactionTableToClipboard() {
     <div class="card {{ CARD_CLASS }} mb-2">
       <div class="card-header">Group By Month</div>
       <div class="card-body">
-        <table id="transaction_summary_group_table" class="table table-striped order-column table-condensed dt-responsive nowrap {{ theme.TABLE_CLASS }}" style="width:100%;" cellspacing="0" cellpadding="0">
-        </table>        
+        <div id="transaction_summary_group_grid" class="ag-grid-host" style="width:100%;height:600px;"></div>
       </div>
     </div>
   </div>
@@ -725,8 +699,7 @@ async function copyTransactionTableToClipboard() {
     <div class="card {{ CARD_CLASS }} mb-2">
       <div class="card-header">Class Total</div>
       <div class="card-body">
-        <table id="transaction_summary_class_table" class="table table-striped order-column table-condensed dt-responsive nowrap {{ theme.TABLE_CLASS }}" style="width:100%;" cellspacing="0" cellpadding="0">
-        </table>        
+        <div id="transaction_summary_class_grid" class="ag-grid-host" style="width:100%;height:600px;"></div>
       </div>
     </div>
   </div>
@@ -738,8 +711,7 @@ async function copyTransactionTableToClipboard() {
         <button type="button" class="btn btn-outline-secondary btn-sm" id="transactionCopyBtn" onclick="copyTransactionTableToClipboard()">Copy</button>
       </div>
       <div class="card-body">
-        <table id="transaction_table" class="table table-striped order-column table-condensed dt-responsive nowrap {{ theme.TABLE_CLASS }}" style="width:100%;" cellspacing="0" cellpadding="0">
-        </table>        
+        <div id="transaction_grid" class="ag-grid-host" style="width:100%;height:600px;"></div>
       </div>
     </div>
   </div>
