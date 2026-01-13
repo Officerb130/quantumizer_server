@@ -7,7 +7,7 @@
 <script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
 <script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap4.min.js"></script>
 
-<style type=“text/css”>
+<style type="text/css">
 
   .right-aligned-cell {
     text-align: right;
@@ -22,7 +22,39 @@
   }
 
   .blue {
-    color: blue;
+    color: inherit;
+  }
+
+  /* Selected row highlight for DataTables */
+  table.dataTable tbody tr.highlight > td {
+    background-color: inherit !important;
+    color: #ffff00 !important;
+  }
+
+  table.dataTable tbody tr.highlight > td a {
+    color: #ffff00 !important;
+  }
+
+  /* Hover highlight (mouse over) in all grids: dark background */
+  #transaction_total_table tbody tr:hover:not(.highlight) > *,
+  #transaction_summary_group_table tbody tr:hover:not(.highlight) > *,
+  #transaction_summary_class_table tbody tr:hover:not(.highlight) > *,
+  #transaction_table tbody tr:hover:not(.highlight) > * {
+    --bs-table-accent-bg: rgba(0, 0, 0, 0.35) !important;
+    background-color: rgba(0, 0, 0, 0.35) !important;
+  }
+
+  /* Dark transaction details table inside modal */
+  #descriptionRegexModalDetails table {
+    background-color: #1f2328 !important;
+    color: #f8f9fa !important;
+  }
+
+  #descriptionRegexModalDetails table th,
+  #descriptionRegexModalDetails table td {
+    background-color: transparent !important;
+    color: inherit !important;
+    border-color: rgba(255,255,255,0.15) !important;
   }
   
   .noBorder {
@@ -84,6 +116,10 @@ $(document).ready( function () {
       var select = "{{ t_type or '' }}";
       setSelectedValue(objSelect, select);
     }
+
+    // Apply theme font size via JS to avoid inline-style parsing issues with templating
+    var tableFontSize = "{{ theme.TABLE_FONT_SIZE }}";
+    $('#transaction_total_table, #transaction_summary_group_table, #transaction_summary_class_table, #transaction_table').css('font-size', tableFontSize);
     SyncData();
   }
 });
@@ -92,6 +128,155 @@ function SyncData()
 {
   loadTotalTable();
   loadSummaryGroupTable();
+}
+
+function clearHighlightsForTable(tableSelector) {
+  $(tableSelector + ' tbody tr').removeClass('highlight');
+}
+
+// -----------------------------
+// Description regex modal helpers
+// -----------------------------
+var _descriptionRegexModalInstance = null;
+
+function getDescriptionRegexModalInstance() {
+  if (_descriptionRegexModalInstance != null) {
+    return _descriptionRegexModalInstance;
+  }
+  var el = document.getElementById('descriptionRegexModal');
+  if (!el || typeof bootstrap === 'undefined' || !bootstrap.Modal) {
+    return null;
+  }
+  _descriptionRegexModalInstance = new bootstrap.Modal(el);
+  return _descriptionRegexModalInstance;
+}
+
+function escapeRegexLiteral(s) {
+  if (s == null) return '';
+  return String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+async function copyTextToClipboard(text) {
+  if (!text) return false;
+  if (navigator.clipboard && window.isSecureContext) {
+    await navigator.clipboard.writeText(text);
+    return true;
+  }
+  var ta = document.createElement('textarea');
+  ta.value = text;
+  ta.setAttribute('readonly', '');
+  ta.style.position = 'absolute';
+  ta.style.left = '-9999px';
+  document.body.appendChild(ta);
+  ta.select();
+  ta.setSelectionRange(0, ta.value.length);
+  var ok = false;
+  try {
+    ok = document.execCommand('copy');
+  } catch (e) {
+    ok = false;
+  }
+  document.body.removeChild(ta);
+  return ok;
+}
+
+async function onCopyDescriptionRegexJson() {
+  var pre = document.getElementById('descriptionRegexModalPre');
+  var btn = document.getElementById('descriptionRegexCopyBtn');
+  if (!pre) return;
+  try {
+    if (btn) {
+      btn.disabled = true;
+      btn.innerText = 'Copying...';
+    }
+    var ok = await copyTextToClipboard(pre.innerText || pre.textContent || '');
+    if (btn) {
+      btn.innerText = ok ? 'Copied' : 'Copy failed';
+      setTimeout(function() {
+        btn.innerText = 'Copy';
+        btn.disabled = false;
+      }, 1200);
+    }
+  } catch (e) {
+    if (btn) {
+      btn.innerText = 'Copy failed';
+      btn.disabled = false;
+    }
+  }
+}
+
+var _lastTransactionModalDescription = '';
+
+function searchTransactionDescriptionOnGoogle() {
+  var q = (_lastTransactionModalDescription || '').toString().trim();
+  if (!q) return;
+  var url = 'https://www.google.com/search?q=' + encodeURIComponent(q);
+  window.open(url, '_blank', 'noopener');
+}
+
+function formatTxnAmount(v) {
+  var num = (typeof v === 'number') ? v : parseFloat(v);
+  if (isNaN(num)) num = 0;
+  return num.toLocaleString('en-US', { maximumFractionDigits: 0 });
+}
+
+function buildTransactionDetailTableHtml(row) {
+  var r = row || [];
+  var id = r[0];
+  var date = r[1];
+  var desc = r[2];
+  var amount = r[3];
+  var cls = r[4];
+  var grp = r[5];
+  var src = r[6];
+  var typ = r[7];
+
+  var html = '';
+  html += '<table class="table table-sm mb-2">';
+  html += '<tbody>';
+  html += '<tr><th style="width:120px;">ID</th><td>' + (id == null ? '' : id) + '</td></tr>';
+  html += '<tr><th>Date</th><td>' + (date == null ? '' : date) + '</td></tr>';
+  html += '<tr><th>Description</th><td>' + (desc == null ? '' : desc) + '</td></tr>';
+  html += '<tr><th>Amount</th><td>' + formatTxnAmount(amount) + '</td></tr>';
+  html += '<tr><th>Class</th><td>' + (cls == null ? '' : cls) + '</td></tr>';
+  html += '<tr><th>Group</th><td>' + (grp == null ? '' : grp) + '</td></tr>';
+  html += '<tr><th>Source</th><td>' + (src == null ? '' : src) + '</td></tr>';
+  html += '<tr><th>Type</th><td>' + (typ == null ? '' : typ) + '</td></tr>';
+  html += '</tbody>';
+  html += '</table>';
+  return html;
+}
+
+function showDescriptionRegexModal(row) {
+  var titleEl = document.getElementById('descriptionRegexModalTitle');
+  var detailsEl = document.getElementById('descriptionRegexModalDetails');
+  var preEl = document.getElementById('descriptionRegexModalPre');
+  var copyBtn = document.getElementById('descriptionRegexCopyBtn');
+
+  var desc = '';
+  if (Array.isArray(row)) {
+    desc = (row[2] || '').toString().trim();
+  } else {
+    desc = (row || '').toString().trim();
+  }
+  _lastTransactionModalDescription = desc;
+
+  var regex = desc ? ('.*' + escapeRegexLiteral(desc) + '.*') : '.*';
+  var payload = { regex: regex };
+  var jsonText = JSON.stringify(payload, null, 2) + ',';
+
+  if (titleEl) titleEl.innerText = 'Transaction detail';
+  if (detailsEl) {
+    detailsEl.innerHTML = buildTransactionDetailTableHtml(row);
+  }
+  if (preEl) preEl.textContent = jsonText;
+  if (copyBtn) {
+    copyBtn.innerText = 'Copy';
+    copyBtn.disabled = false;
+  }
+
+  var modal = getDescriptionRegexModalInstance();
+  if (modal) modal.show();
 }
 
 function loadTotalTable()
@@ -131,15 +316,15 @@ function loadTotalTable()
         ],
         "data": dataSet,
         "columns": [
-            { "title": 'Group', "class": "blue" },
-            { "title": 'Amount', "class": "blue" },
+          { "title": 'Group' },
+          { "title": 'Amount' },
         ],
       });
 
       $('#transaction_total_table').off('click', 'tr');
       $('#transaction_total_table').on('click', 'tr', function () {
         var row = table.row(this).data();
-        $(table.cells().nodes()).removeClass('highlight');
+        clearHighlightsForTable('#transaction_total_table');
         $(table.row(this).nodes()).addClass('highlight');
 
         removeTransactionTable();
@@ -208,11 +393,14 @@ function loadSummaryGroupTable(group_filter = null)
 
         $('#transaction_summary_group_table').off('click', 'tr');
         $('#transaction_summary_group_table').on('click', 'tr', function () {
-        removeTransactionTable();
         var row = summaryGroupTable.row(this).data();
         var dtStart = parseDate(row[1] + "-01");
         var dtEnd = new Date(dtStart.getFullYear(), dtStart.getMonth()+1, 0);
+        clearHighlightsForTable('#transaction_summary_group_table');
+        $(summaryGroupTable.row(this).nodes()).addClass('highlight');
+        removeTransactionTable();
         loadSummaryClassTable(row[0], formatDate(dtStart), formatDate(dtEnd));
+        loadTransactionTable(null, row[0], formatDate(dtStart), formatDate(dtEnd));
       });
 
       $("#transaction_summary_group_table tbody tr").each(function() { $(this).find('td:eq(2)').addClass('text-right'); });
@@ -281,6 +469,8 @@ function loadSummaryClassTable(group_filter = null, start_date = null, end_date 
     $('#transaction_summary_class_table').off('click', 'tr');
     $('#transaction_summary_class_table').on('click', 'tr', function () {
       var row = summaryClassTable.row(this).data();
+      clearHighlightsForTable('#transaction_summary_class_table');
+      $(summaryClassTable.row(this).nodes()).addClass('highlight');
       // console.log(summaryClassTable.row(this).data());
       var dtStart = parseDate(row[1] + "-01");
       var dtEnd = new Date(dtStart.getFullYear(), dtStart.getMonth()+1, 0);
@@ -337,18 +527,22 @@ function loadTransactionTable(class_filter = null, group_filter = null, start_da
         "bLengthChange": false,
         "paging": false,
         "pageLength": 12,
-        "order": [[ 1, 'asc' ]],      
+        "order": [[ 3, 'asc' ]],
         "columnDefs": [
-            // { "width": "150px", "targets": 0 },
-            { "width": "100px", "targets": 3 },
-            { "visible": false, "targets": [1,4,5] },
-            // { "width": "100px", "targets": 2 },
-            {
-                "render": function ( data, type, row ) {
-                    return row[3].toLocaleString('en-US', {maximumFractionDigits:0}) 
-                },
-                "targets": 3
+          // { "width": "150px", "targets": 0 },
+          { "width": "100px", "targets": 3 },
+          // { "width": "100px", "targets": 2 },
+          {
+            "render": function ( data, type, row ) {
+              var v = row[3];
+              var num = (typeof v === 'number') ? v : parseFloat(v);
+              if (type === 'sort' || type === 'type') {
+                return isNaN(num) ? 0 : num;
+              }
+              return (isNaN(num) ? 0 : num).toLocaleString('en-US', {maximumFractionDigits:0})
             },
+            "targets": 3
+          },
         ],
         "data": dataSet,
         "columns": [
@@ -358,14 +552,102 @@ function loadTransactionTable(class_filter = null, group_filter = null, start_da
             { "title": 'Amount' },
             { "title": 'Class' },
             { "title": 'Group' },
+          { "title": 'Source' },
         ],
+      });
+
+      $('#transaction_table').off('click', 'tr');
+      $('#transaction_table').on('click', 'tr', function () {
+        var row = transactionTable.row(this).data();
+        if (!row) return;
+        showDescriptionRegexModal(row);
       });
 
     });
     $("#transaction_table").show();
   }
 
+function sanitizeTsvCell(v) {
+  if (v == null) return '';
+  return String(v).replace(/\t/g, ' ').replace(/\r?\n/g, ' ').trim();
+}
+
+function buildTransactionTableTsv() {
+  if (!transactionTable) return '';
+  var header = ['ID', 'Date', 'Description', 'Amount', 'Class', 'Group', 'Source'];
+  var lines = [header.join('\t')];
+  var rows = transactionTable.rows({ search: 'applied' }).data().toArray();
+  for (var i = 0; i < rows.length; i++) {
+    var r = rows[i] || [];
+    var amount = r[3];
+    var num = (typeof amount === 'number') ? amount : parseFloat(amount);
+    var amountText = (isNaN(num) ? 0 : num).toLocaleString('en-US', { maximumFractionDigits: 0 });
+    lines.push([
+      sanitizeTsvCell(r[0]),
+      sanitizeTsvCell(r[1]),
+      sanitizeTsvCell(r[2]),
+      sanitizeTsvCell(amountText),
+      sanitizeTsvCell(r[4]),
+      sanitizeTsvCell(r[5])
+      ,sanitizeTsvCell(r[6])
+    ].join('\t'));
+  }
+  return lines.join('\n');
+}
+
+async function copyTransactionTableToClipboard() {
+  var btn = document.getElementById('transactionCopyBtn');
+  try {
+    var tsv = buildTransactionTableTsv();
+    if (!tsv) {
+      if (btn) btn.innerText = 'No rows';
+      return;
+    }
+    if (btn) {
+      btn.disabled = true;
+      btn.innerText = 'Copying...';
+    }
+    var ok = await copyTextToClipboard(tsv);
+    if (btn) {
+      btn.innerText = ok ? 'Copied' : 'Copy failed';
+      setTimeout(function() {
+        btn.innerText = 'Copy';
+        btn.disabled = false;
+      }, 1200);
+    }
+  } catch (e) {
+    if (btn) {
+      btn.innerText = 'Copy failed';
+      btn.disabled = false;
+    }
+  }
+}
+
 </script>
+
+<!-- Description regex modal (shown when clicking a row in the Transactions table) -->
+<div class="modal fade" id="descriptionRegexModal" tabindex="-1" aria-labelledby="descriptionRegexModalTitle" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content {{ CARD_CLASS }}">
+      <div class="modal-header">
+        <h5 class="modal-title" id="descriptionRegexModalTitle">Transaction detail</h5>
+        <div class="d-flex align-items-center ms-auto">
+          <button type="button" class="btn btn-outline-secondary btn-sm" id="descriptionRegexSearchBtn" onclick="searchTransactionDescriptionOnGoogle()">Search</button>
+          <button type="button" class="btn-close ms-2" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+      </div>
+      <div class="modal-body">
+        <div id="descriptionRegexModalDetails"></div>
+        <hr class="my-2" />
+        <div class="d-flex align-items-center">
+          <div class="flex-grow-1 fw-semibold">JSON snippet</div>
+          <button type="button" class="btn btn-outline-secondary btn-sm" id="descriptionRegexCopyBtn" onclick="onCopyDescriptionRegexJson()">Copy</button>
+        </div>
+        <pre id="descriptionRegexModalPre" class="mb-0 mt-2" style="white-space:pre-wrap;word-break:break-word;"></pre>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- <centre><h2>Transaction Summary</h2></centre> -->
 
@@ -423,7 +705,7 @@ function loadTransactionTable(class_filter = null, group_filter = null, start_da
     <div class="card {{ CARD_CLASS }} mb-2">
       <div class="card-header">Group Total</div>
       <div class="card-body">
-        <table id="transaction_total_table" class="table table-hover table-striped order-column table-condensed dt-responsive nowrap {{ theme.TABLE_CLASS }}" style="width:100%;font-size:{{ theme.TABLE_FONT_SIZE }};" cellspacing="0" cellpadding="0">
+        <table id="transaction_total_table" class="table table-striped order-column table-condensed dt-responsive nowrap {{ theme.TABLE_CLASS }}" style="width:100%;" cellspacing="0" cellpadding="0">
         </table>
       </div>
     </div>
@@ -433,7 +715,7 @@ function loadTransactionTable(class_filter = null, group_filter = null, start_da
     <div class="card {{ CARD_CLASS }} mb-2">
       <div class="card-header">Group By Month</div>
       <div class="card-body">
-        <table id="transaction_summary_group_table" class="table table-hover table-striped order-column table-condensed dt-responsive nowrap {{ theme.TABLE_CLASS }}" style="width:100%;font-size:{{ theme.TABLE_FONT_SIZE }};" cellspacing="0" cellpadding="0">
+        <table id="transaction_summary_group_table" class="table table-striped order-column table-condensed dt-responsive nowrap {{ theme.TABLE_CLASS }}" style="width:100%;" cellspacing="0" cellpadding="0">
         </table>        
       </div>
     </div>
@@ -443,7 +725,7 @@ function loadTransactionTable(class_filter = null, group_filter = null, start_da
     <div class="card {{ CARD_CLASS }} mb-2">
       <div class="card-header">Class Total</div>
       <div class="card-body">
-        <table id="transaction_summary_class_table" class="table table-hover table-striped order-column table-condensed dt-responsive nowrap {{ theme.TABLE_CLASS }}" style="width:100%;font-size:{{ theme.TABLE_FONT_SIZE }};" cellspacing="0" cellpadding="0">
+        <table id="transaction_summary_class_table" class="table table-striped order-column table-condensed dt-responsive nowrap {{ theme.TABLE_CLASS }}" style="width:100%;" cellspacing="0" cellpadding="0">
         </table>        
       </div>
     </div>
@@ -451,9 +733,12 @@ function loadTransactionTable(class_filter = null, group_filter = null, start_da
 
   <div class="col-5">
     <div class="card {{ CARD_CLASS }} mb-2">
-      <div class="card-header">Transactions</div>
+      <div class="card-header d-flex align-items-center">
+        <div class="flex-grow-1">Transactions</div>
+        <button type="button" class="btn btn-outline-secondary btn-sm" id="transactionCopyBtn" onclick="copyTransactionTableToClipboard()">Copy</button>
+      </div>
       <div class="card-body">
-        <table id="transaction_table" class="table table-hover table-striped order-column table-condensed dt-responsive nowrap {{ theme.TABLE_CLASS }}" style="width:100%;font-size:{{ theme.TABLE_FONT_SIZE }};" cellspacing="0" cellpadding="0">
+        <table id="transaction_table" class="table table-striped order-column table-condensed dt-responsive nowrap {{ theme.TABLE_CLASS }}" style="width:100%;" cellspacing="0" cellpadding="0">
         </table>        
       </div>
     </div>

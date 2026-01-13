@@ -1,0 +1,37 @@
+# This workflow will install Python dependencies, run tests and lint with a single version of Python
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
+
+name: Evandus Server
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+
+    #runs-on: ubuntu-latest
+    runs-on: self-hosted
+    env:
+      DEFAULT_DOCKER_REPO: "${{ vars.DEFAULT_DOCKER_REPO }}"
+      DOCKER_REPO_USERNAME: "${{ secrets.DOCKER_REPO_USERNAME }}"
+      DOCKER_REPO_PASSWORD: "${{ secrets.DOCKER_REPO_PASSWORD }}"
+      IMAGE_NAME: "${{ vars.IMAGE_NAME }}"
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python 3.12
+      uses: actions/setup-python@v3
+      with:
+        python-version: "3.12"
+    - name: Docker Build
+      run: |
+        ./build_docker.sh
+    - name: Docker Publish
+      run: |
+        ./publish_docker.sh

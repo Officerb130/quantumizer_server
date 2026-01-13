@@ -75,6 +75,7 @@
         </form> 
       </div>
       <div class="card-body">
+        <div id="chart_spend_annotations" class="d-flex justify-content-end fw-semibold" style="font-size:13px;color:#ffffff;line-height:1.2;"></div>
         <div id="chart_spend"></div>
       </div>
     </div>
@@ -100,6 +101,7 @@
         </form> 
       </div>
       <div class="card-body">
+        <div id="chart_income_annotations" class="d-flex justify-content-end fw-semibold" style="font-size:13px;color:#ffffff;line-height:1.2;"></div>
         <div id="chart_income"></div>
       </div>
     </div>
@@ -110,6 +112,7 @@
 <div class="form-group row">
   <div class="col-6">
     <div class="card {{ theme.CARD_CLASS }} mb-2">
+      <div id="chart_difference_annotations" class="d-flex justify-content-end fw-semibold" style="font-size:12px;color:#ffffff;line-height:1.2;padding:0.5rem 0.75rem 0 0.75rem;"></div>
       <div id="chart_difference"></div>
     </div>
   </div>
@@ -420,6 +423,24 @@
       var svg2 = d3.select(chart_id);
       svg2.selectAll("*").remove();
 
+      // write annotations into a header element above the chart (not inside SVG)
+      function setChartAnnotations(totalValue, avgValue) {
+        var targetId = null;
+        if (chart_id === "#chart_spend") targetId = "chart_spend_annotations";
+        if (chart_id === "#chart_income") targetId = "chart_income_annotations";
+        if (!targetId) return;
+        var el = document.getElementById(targetId);
+        if (!el) return;
+        var html = "";
+        if (totalValue != null) {
+          html += "<div class=\"text-end\">Total: " + totalValue.toLocaleString('en-US', {maximumFractionDigits:0}) + "</div>&nbsp;&nbsp;";
+        }
+        if (avgValue != null) {
+          html += "<div class=\"text-end\">Avg: " + avgValue.toLocaleString('en-US', {maximumFractionDigits:0}) + "</div>";
+        }
+        el.innerHTML = html;
+      }
+
       const margin = {top: 10, right: 10, bottom: 20, left: 40};
       var width = parseInt(d3.select('#chart_spend').style('width'), 10);
       width = width - margin.left - margin.right;
@@ -536,24 +557,8 @@
     
     // add grand total annotation (sum of all group totals)
     const grandTotal = diffTotals.reduce((sum, v) => sum + (isNaN(v) ? 0 : v), 0);
-    svg.append("text")
-      .attr("x", width)
-      .attr("y", 12)
-      .attr("text-anchor", "end")
-      .style("font-size", "13px")
-      .style("font-weight", "600")
-      .style("fill", "#ffffff")
-      .text("Total: " + grandTotal.toLocaleString('en-US', {maximumFractionDigits:0}));
-  
     const avgValue = (groups && groups.length) ? (grandTotal / groups.length) : 0;
-    svg.append("text")
-      .attr("x", width)
-      .attr("y", 28)
-      .attr("text-anchor", "end")
-      .style("font-size", "13px")
-      .style("font-weight", "600")
-      .style("fill", "#ffffff")
-      .text("Avg: " + avgValue.toLocaleString('en-US', {maximumFractionDigits:0}));
+    setChartAnnotations(grandTotal, avgValue);
   
     function mapXLocation(event, rect) {
 			var xoffset = 100;
@@ -770,6 +775,17 @@
     var svg2 = d3.select("#chart_difference");
     svg2.selectAll("*").remove();
 
+    // header annotation above the difference chart
+    function setDifferenceAnnotations(avgValue) {
+      var el = document.getElementById('chart_difference_annotations');
+      if (!el) return;
+      if (avgValue == null) {
+        el.innerHTML = '';
+        return;
+      }
+      el.innerHTML = "<div class=\"text-end\">Avg: " + avgValue.toLocaleString('en-US', {maximumFractionDigits:0}) + "</div>";
+    }
+
     const margin = {top: 10, right: 20, bottom: 20, left: 52};
     var width = parseInt(d3.select('#chart_difference').style('width'), 10);
     width = width - margin.left - margin.right;
@@ -895,14 +911,7 @@
     .text("Total: " + grandTotal.toLocaleString('en-US', {maximumFractionDigits:0}));*/
   
   const avgValueDiff = (groups && groups.length) ? (grandTotal / groups.length) : 0;
-  svg.append("text")
-    .attr("x", width)
-    .attr("y", 12)
-    .attr("text-anchor", "end")
-    .style("font-size", "12px")
-    .style("font-weight", "600")
-    .style("fill", "#ffffff")
-    .text("Avg: " + avgValueDiff.toLocaleString('en-US', {maximumFractionDigits:0}));
+  setDifferenceAnnotations(avgValueDiff);
 
     function mapXLocation(event, rect) {
 			var xoffset = 100;
