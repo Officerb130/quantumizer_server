@@ -33,6 +33,12 @@
     color: #f8f9fa !important;
   }
 
+  /* Use Google Font in the modal dialog */
+  #descriptionRegexModal .modal-content,
+  #descriptionRegexModal .modal-content * {
+    font-family: 'Noto Sans', sans-serif !important;
+  }
+
   #descriptionRegexModalDetails table th,
   #descriptionRegexModalDetails table td {
     background-color: transparent !important;
@@ -43,6 +49,11 @@
   /* Fit with existing layout + use Google Font */
   .ag-grid-host {
     font-family: 'Noto Sans', serif;
+  }
+
+  /* Card headers should match the app font */
+  .card .card-header {
+    font-family: 'Noto Sans', sans-serif !important;
   }
 
   /* AG Grid theme CSS sets its own font; override it to match the app font. */
@@ -112,6 +123,7 @@ function SyncData()
 {
   loadTotalTable();
   loadSummaryGroupTable();
+  setTransactionsFilterLabel(null);
 }
 
 // -----------------------------
@@ -121,6 +133,37 @@ var totalGridApi = null;
 var monthGridApi = null;
 var classGridApi = null;
 var txnGridApi = null;
+
+var _txnContextGroup = null;
+var _txnContextMonth = null;
+
+// -----------------------------
+// Transactions filter label
+// -----------------------------
+function _monthFromStartDate(startDate) {
+  if (!startDate) return '';
+  var s = String(startDate);
+  // Expect YYYY-MM-DD; show YYYY-MM
+  if (s.length >= 7) return s.slice(0, 7);
+  return s;
+}
+
+function setTransactionsFilterLabel(parts) {
+  var el = document.getElementById('transactionFilterLabel');
+  if (!el) return;
+
+  var p = parts || {};
+  var groupName = (p.group || '').toString().trim();
+  var month = (p.month || '').toString().trim();
+  var className = (p.className || '').toString().trim();
+
+  var items = [];
+  if (groupName) items.push(groupName);
+  if (month) items.push(month);
+  if (className) items.push(className);
+
+  el.textContent = items.length ? ('[' + items.join(' - ') + ']') : '';
+}
 
 function setGridRows(api, rows) {
   if (!api) return;
@@ -187,7 +230,10 @@ function initGrids() {
       // selecting a group resets downstream
       clearGrid(classGridApi);
       clearGrid(txnGridApi);
+      _txnContextGroup = e.data.group;
+      _txnContextMonth = null;
       loadSummaryGroupTable(e.data.group);
+      loadTransactionTable(null, e.data.group, null, null);
     }
   };
 
@@ -204,6 +250,8 @@ function initGrids() {
     ],
     onRowClicked: function(e) {
       if (!e || !e.data) return;
+      _txnContextGroup = e.data.group;
+      _txnContextMonth = e.data.month;
       var dtStart = parseDate(e.data.month + "-01");
       var dtEnd = new Date(dtStart.getFullYear(), dtStart.getMonth() + 1, 0);
       loadSummaryClassTable(e.data.group, formatDate(dtStart), formatDate(dtEnd));
@@ -220,13 +268,14 @@ function initGrids() {
     columnDefs: [
       { headerName: 'Class', field: 'className', flex: 1 },
       { headerName: 'Date', field: 'month', width: 110 },
-      { headerName: 'Amount', field: 'amount', width: 120, valueFormatter: function(p){ return fmtAmount(p.value); } }
+      { headerName: 'Amount', field: 'amount', width: 120, sort: 'asc', valueFormatter: function(p){ return fmtAmount(p.value); } }
     ],
     onRowClicked: function(e) {
       if (!e || !e.data) return;
+      _txnContextMonth = e.data.month;
       var dtStart = parseDate(e.data.month + "-01");
       var dtEnd = new Date(dtStart.getFullYear(), dtStart.getMonth() + 1, 0);
-      loadTransactionTable(e.data.className, null, formatDate(dtStart), formatDate(dtEnd));
+      loadTransactionTable(e.data.className, _txnContextGroup, formatDate(dtStart), formatDate(dtEnd));
     }
   };
 
@@ -535,6 +584,12 @@ function loadTransactionTable(class_filter, group_filter, start_date, end_date) 
       };
     });
     setGridRows(txnGridApi, rows);
+
+    setTransactionsFilterLabel({
+      group: group_filter || _txnContextGroup,
+      month: _monthFromStartDate(start_date) || (_txnContextMonth || ''),
+      className: class_filter
+    });
   });
 }
 
@@ -675,39 +730,45 @@ async function copyTransactionTableToClipboard() {
   </fieldset>
 </form> -->
 
-<div class="form-group row">
+<div class="row g-2">
 
-  <div class="col-2">
+  <div class="col-lg-3 col-md-4">
     <div class="card {{ CARD_CLASS }} mb-2">
       <div class="card-header">Group Total</div>
       <div class="card-body">
-        <div id="transaction_total_grid" class="ag-grid-host" style="width:100%;height:600px;"></div>
+        <div id="transaction_total_grid" class="ag-grid-host" style="width:100%;height:400px;"></div>
       </div>
     </div>
   </div>
 
-  <div class="col-3">
+  <div class="col-lg-5 col-md-4">
     <div class="card {{ CARD_CLASS }} mb-2">
       <div class="card-header">Group By Month</div>
       <div class="card-body">
-        <div id="transaction_summary_group_grid" class="ag-grid-host" style="width:100%;height:600px;"></div>
+        <div id="transaction_summary_group_grid" class="ag-grid-host" style="width:100%;height:400px;"></div>
       </div>
     </div>
   </div>
 
-  <div class="col-2">
+  <div class="col-lg-4 col-md-4">
     <div class="card {{ CARD_CLASS }} mb-2">
       <div class="card-header">Class Total</div>
       <div class="card-body">
-        <div id="transaction_summary_class_grid" class="ag-grid-host" style="width:100%;height:600px;"></div>
+        <div id="transaction_summary_class_grid" class="ag-grid-host" style="width:100%;height:400px;"></div>
       </div>
     </div>
   </div>
 
-  <div class="col-5">
+</div>
+
+<div class="row mt-2">
+  <div class="col-12">
     <div class="card {{ CARD_CLASS }} mb-2">
       <div class="card-header d-flex align-items-center">
-        <div class="flex-grow-1">Transactions</div>
+        <div class="flex-grow-1">
+          <span>Transactions:</span>
+          <span class="ms-2" id="transactionFilterLabel" style="color:inherit;"></span>
+        </div>
         <button type="button" class="btn btn-outline-secondary btn-sm" id="transactionCopyBtn" onclick="copyTransactionTableToClipboard()">Copy</button>
       </div>
       <div class="card-body">
@@ -715,7 +776,6 @@ async function copyTransactionTableToClipboard() {
       </div>
     </div>
   </div>
-
 </div>
 
 

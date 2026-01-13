@@ -2,74 +2,17 @@
 
 {% block content %}
 
-<!-- <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.css">
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap4.min.css"> -->
-<script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
-<script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap4.min.js"></script>
+<!-- AG Grid Community (CDN) - v33+ Theming API (no legacy CSS themes) -->
+<script src="https://cdn.jsdelivr.net/npm/ag-grid-community/dist/ag-grid-community.min.noStyle.js"></script>
+
+<!-- Google Font: Noto Sans -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto%20Sans:wght@400;700&display=swap" rel="stylesheet">
 
 <script>
 
 var parseTime = d3.timeParse("%Y-%m-%d %H:%M:%S"), formatShortDate = d3.timeFormat("%Y-%m-%d %H:%M"),formatDate = d3.timeFormat("%Y-%m-%d");
-
-$(document).ready( function () {
-    $('#transactions_table').DataTable(
-      {
-        "bInfo": false,
-        "autoWidth": true,
-        "bFilter": true,
-        "bLengthChange": false,
-        "pageLength": 25,
-        "order": [[ 1, 'desc' ]],      
-        "columnDefs": [
-            { "width": "100px", "targets": 1 }
-        ]
-        //     {
-        //         // The `data` parameter refers to the data for the cell (defined by the
-        //         // `data` option, which defaults to the column being worked with, in
-        //         // this case `data: 0`.
-        //         "render": function ( data, type, row ) {
-        //             var dt = parseTime(data);
-        //             return formatDate(dt)
-        //             //return data +' ('+ row[3]+')';
-        //         },
-        //         "targets": 1
-        //     },
-        //     {
-        //         "render": function ( data, type, row ) {
-        //             if ( row[3] == "0%" ) { return ""; }
-        //             return row[3]
-        //         },
-        //         "targets": 3
-        //     },
-        //     {
-        //         "render": function ( data, type, row ) {
-        //             if ( row[8] == "0" ) { return ""; }
-        //             return row[8]
-        //         },
-        //         "targets": 8
-        //     },
-        //     {
-        //         "render": function ( data, type, row ) {
-        //             if ( row[9] == "0" ) { return ""; }
-        //             return row[9]
-        //         },
-        //         "targets": 9
-        //     },
-        //     {
-        //         "render": function ( data, type, row ) {
-        //             avg =  calcAverage(row[8], row[10]);
-        //             if (avg == 0 ) { return ""; }
-        //             return avg
-        //         },
-        //         "targets": 7
-        //     },
-        //     { "visible": false,  "targets": [ 10 ] }
-        // ]
-      
-      });
-    //$('#transactions_table').DataTable({"pageLength": 30, "info" : false});
-    $("#transactions_table").show();
-});
 
 $(document).ready( function () {
   {
@@ -92,17 +35,298 @@ $(document).ready( function () {
     var select = "{{ t_type or '' }}";
     setSelectedValue(objSelect, select);
   }
+
+  // Apply configured table font size to AG Grid containers (avoid Jinja in CSS).
+  $('.ag-grid-host').css('font-size', "{{ theme.TABLE_FONT_SIZE }}");
+
+  initTransactionsGrid();
+
+  // Fit grid height to available viewport space.
+  autoSizeTransactionGridHeight();
+  var _resizeTimer = null;
+  window.addEventListener('resize', function() {
+    if (_resizeTimer) window.clearTimeout(_resizeTimer);
+    _resizeTimer = window.setTimeout(function() {
+      autoSizeTransactionGridHeight();
+    }, 100);
+  });
+
+  var searchEl = document.getElementById('descriptionSearchInput');
+  if (searchEl) {
+    searchEl.addEventListener('input', function() {
+      setDescriptionSearch(searchEl.value);
+    });
+  }
 });
+
+var txnGridApi = null;
+
+function autoSizeTransactionGridHeight() {
+  var gridEl = document.getElementById('transaction_grid');
+  if (!gridEl) return;
+
+  // Compute available space from the grid's current top position.
+  var rect = gridEl.getBoundingClientRect();
+  var viewportH = window.innerHeight || document.documentElement.clientHeight || 800;
+  var bottomPad = 20;
+  var available = viewportH - rect.top - bottomPad;
+  var h = Math.max(260, Math.floor(available));
+  gridEl.style.height = h + 'px';
+
+  // Tell the grid to re-layout after container resize.
+  if (txnGridApi && typeof txnGridApi.doLayout === 'function') {
+    txnGridApi.doLayout();
+  }
+}
+
+function fmtAmount(v) {
+  var num = (typeof v === 'number') ? v : parseFloat(v);
+  if (isNaN(num)) num = 0;
+  return num.toLocaleString('en-US', { maximumFractionDigits: 0 });
+}
+
+function sanitizeTsvCell(v) {
+  if (v == null) return '';
+  return String(v).replace(/\t/g, ' ').replace(/\r?\n/g, ' ').trim();
+}
+
+async function copyTextToClipboard(text) {
+  if (!text) return false;
+  if (navigator.clipboard && window.isSecureContext) {
+    await navigator.clipboard.writeText(text);
+    return true;
+  }
+  var ta = document.createElement('textarea');
+  ta.value = text;
+  ta.setAttribute('readonly', '');
+  ta.style.position = 'absolute';
+  ta.style.left = '-9999px';
+  document.body.appendChild(ta);
+  ta.select();
+  ta.setSelectionRange(0, ta.value.length);
+  var ok = false;
+  try {
+    ok = document.execCommand('copy');
+  } catch (e) {
+    ok = false;
+  }
+  document.body.removeChild(ta);
+  return ok;
+}
+
+function buildTransactionsTsv() {
+  if (!txnGridApi) return '';
+  var header = ['ID', 'Date', 'Description', 'Amount', 'Class', 'Group', 'Source', 'Type'];
+  var lines = [header.join('\t')];
+
+  var iter = (typeof txnGridApi.forEachNodeAfterFilterAndSort === 'function')
+    ? txnGridApi.forEachNodeAfterFilterAndSort.bind(txnGridApi)
+    : (typeof txnGridApi.forEachNode === 'function' ? txnGridApi.forEachNode.bind(txnGridApi) : null);
+
+  if (!iter) return lines.join('\n');
+
+  iter(function(node) {
+    if (!node || !node.data) return;
+    var d = node.data;
+    lines.push([
+      sanitizeTsvCell(d.id),
+      sanitizeTsvCell(d.date),
+      sanitizeTsvCell(d.description),
+      sanitizeTsvCell(fmtAmount(d.amount)),
+      sanitizeTsvCell(d.className),
+      sanitizeTsvCell(d.groupName),
+      sanitizeTsvCell(d.source),
+      sanitizeTsvCell(d.type)
+    ].join('\t'));
+  });
+
+  return lines.join('\n');
+}
+
+async function copyTransactionsToClipboard() {
+  var btn = document.getElementById('transactionCopyBtn');
+  try {
+    var tsv = buildTransactionsTsv();
+    if (!tsv || tsv.split('\n').length <= 1) {
+      if (btn) btn.innerText = 'No rows';
+      return;
+    }
+    if (btn) {
+      btn.disabled = true;
+      btn.innerText = 'Copying...';
+    }
+    var ok = await copyTextToClipboard(tsv);
+    if (btn) {
+      btn.innerText = ok ? 'Copied' : 'Copy failed';
+      setTimeout(function() {
+        btn.innerText = 'Copy';
+        btn.disabled = false;
+      }, 1200);
+    }
+  } catch (e) {
+    if (btn) {
+      btn.innerText = 'Copy failed';
+      btn.disabled = false;
+    }
+  }
+}
+
+function setGridRows(api, rows) {
+  if (!api) return;
+  if (typeof api.setRowData === 'function') {
+    api.setRowData(rows || []);
+    return;
+  }
+  if (typeof api.setGridOption === 'function') {
+    api.setGridOption('rowData', rows || []);
+    return;
+  }
+}
+
+function setDescriptionSearch(text) {
+  if (!txnGridApi) return;
+  var q = (text || '').toString();
+
+  // Preserve existing filters while updating just the description filter.
+  var model = {};
+  if (typeof txnGridApi.getFilterModel === 'function') {
+    model = txnGridApi.getFilterModel() || {};
+  } else if (typeof txnGridApi.getGridOption === 'function') {
+    model = txnGridApi.getGridOption('filterModel') || {};
+  }
+
+  if (!q.trim()) {
+    if (model && model.description) {
+      delete model.description;
+    }
+  } else {
+    model = model || {};
+    model.description = {
+      filterType: 'text',
+      type: 'contains',
+      filter: q
+    };
+  }
+
+  if (typeof txnGridApi.setFilterModel === 'function') {
+    txnGridApi.setFilterModel(model);
+    if (typeof txnGridApi.onFilterChanged === 'function') {
+      txnGridApi.onFilterChanged();
+    }
+    return;
+  }
+
+  if (typeof txnGridApi.setGridOption === 'function') {
+    txnGridApi.setGridOption('filterModel', model);
+    return;
+  }
+}
+
+function initTransactionsGrid() {
+  if (typeof agGrid === 'undefined' || (typeof agGrid.createGrid !== 'function' && typeof agGrid.Grid !== 'function')) {
+    return;
+  }
+
+  var gridTheme = agGrid.themeQuartz.withPart(agGrid.colorSchemeDark);
+
+  var defaultColDef = {
+    sortable: true,
+    resizable: true,
+    filter: true
+  };
+
+  var options = {
+    theme: gridTheme,
+    defaultColDef: defaultColDef,
+    rowSelection: 'single',
+    suppressCellFocus: true,
+    rowData: [],
+    columnDefs: [
+      { headerName: 'ID', field: 'id', width: 90 },
+      { headerName: 'Date', field: 'date', width: 120, sort: 'desc' },
+      { headerName: 'Description', field: 'description', flex: 1, minWidth: 200 },
+      { headerName: 'Amount', field: 'amount', width: 120, valueFormatter: function(p){ return fmtAmount(p.value); } },
+      { headerName: 'Class', field: 'className', width: 140 },
+      { headerName: 'Group', field: 'groupName', width: 140 },
+      { headerName: 'Source', field: 'source', width: 140 },
+      { headerName: 'Type', field: 'type', width: 140 }
+    ]
+  };
+
+  var el = document.getElementById('transaction_grid');
+  if (!el) return;
+
+  if (typeof agGrid.Grid === 'function') {
+    new agGrid.Grid(el, options);
+    txnGridApi = options.api || null;
+  } else {
+    txnGridApi = agGrid.createGrid(el, options, { setThemeOnGridDiv: true });
+  }
+
+  // server-rendered rows -> grid rows
+  var raw = [];
+  var jsonEl = document.getElementById('initialTransactionsJson');
+  if (jsonEl) {
+    try {
+      raw = JSON.parse(jsonEl.textContent || jsonEl.innerText || '[]');
+    } catch (e) {
+      raw = [];
+    }
+  }
+  var rows = (raw || []).map(function(r) {
+    return {
+      id: r[0],
+      date: r[1],
+      description: r[2],
+      amount: +r[3],
+      className: r[4],
+      groupName: r[5],
+      source: r[6],
+      type: r[7]
+    };
+  });
+  setGridRows(txnGridApi, rows);
+}
 
 </script>
 
-<style type=“text/css”>
+<style type="text/css">
 
 .noBorder {
     border: 0px;
     padding:0; 
     margin:0;
     border-collapse: collapse;
+}
+
+/* Match Transaction Summary styling */
+.ag-grid-host {
+  font-family: 'Noto Sans', sans-serif;
+}
+
+/* AG Grid selection = yellow text only */
+.ag-grid-host .ag-row-selected,
+.ag-grid-host .ag-row-selected .ag-cell {
+  background-color: inherit !important;
+}
+
+.ag-grid-host .ag-row-selected .ag-cell {
+  color: #ffff00 !important;
+}
+
+/* AG Grid hover highlight = dark */
+.ag-grid-host .ag-row-hover:not(.ag-row-selected) .ag-cell {
+  background-color: rgba(0, 0, 0, 0.35) !important;
+}
+
+.ag-grid-host .ag-root-wrapper,
+.ag-grid-host .ag-root-wrapper * {
+  font-family: 'Noto Sans', sans-serif !important;
+  font-size: inherit !important;
+}
+
+.card .card-header {
+  font-family: 'Noto Sans', sans-serif !important;
 }
 /* .transactions_table.dataTable tbody td {
   vertical-align: middle;
@@ -224,37 +448,39 @@ $(document).ready( function () {
 </fieldset>
 </form> -->
 
-  
-<table id="transactions_table" class="table table-hover table-striped order-column table-condensed dt-responsive nowrap" style="width:100%;font-size:{{ theme.TABLE_FONT_SIZE }};" cellspacing="0" cellpadding="0">
-<!-- <table id="transactions_table" class="table table-striped table-bordered dt-responsive nowrap" style="width:100%;font-size:14px;" cellspacing="0" cellpadding="0"> -->
-<!-- <table class="ui celled table" id="transactions_table" style="width:100%"> -->
-<!-- <table id="transactions_table" class="table table-striped table-bordered" style="width:100%;display:none"> -->
-  <thead>
-    <tr>
-      <th>ID</th>
-      <th>Date</th>
-      <th>Description</th>
-      <th>Amount</th>
-      <th>Class</th>
-      <th>Group</th>
-      <th>Source</th>
-      <th>Type</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for transaction in transactions %}
-    <tr class="{{ theme.TABLE_CLASS }}">
-      <td style='vertical-align:middle'>{{ transaction[0] }}</td>
-      <td style='vertical-align:middle'>{{ transaction[1] }}</td>
-      <td style='vertical-align:middle'>{{ transaction[2] }}</td>
-      <td style='vertical-align:middle;text-align:right'>{{ transaction[3] }}</td>
-      <td style='vertical-align:middle'>{{ transaction[4] }}</td>
-      <td style='vertical-align:middle'>{{ transaction[5] }}</td>
-      <td style='vertical-align:middle'>{{ transaction[6] }}</td>
-      <td style='vertical-align:middle'>{{ transaction[7] }}</td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
+
+<div class="row mt-2">
+  <div class="col-12">
+    <div class="card {{ CARD_CLASS }} mb-2">
+      <div class="card-header d-flex align-items-center">
+        <div class="flex-grow-1">Transactions</div>
+        <div class="d-flex align-items-center" style="gap:8px;">
+          <div class="small">Search:</div>
+          <input id="descriptionSearchInput" type="text" class="form-control form-control-sm" style="width:320px;" placeholder="Description contains..." />
+          <button type="button" class="btn btn-outline-secondary btn-sm" id="transactionCopyBtn" onclick="copyTransactionsToClipboard()">Copy</button>
+        </div>
+      </div>
+      <div class="card-body">
+        <div id="transaction_grid" class="ag-grid-host" style="width:100%;height:260px;"></div>
+        <script type="application/json" id="initialTransactionsJson">
+[
+{% for t in transactions %}
+  [
+    {{ t[0] | tojson }},
+    {{ (t[1] | string) | tojson }},
+    {{ (t[2] | default('') | string) | tojson }},
+    {{ (t[3] | float) | tojson }},
+    {{ (t[4] | default('') | string) | tojson }},
+    {{ (t[5] | default('') | string) | tojson }},
+    {{ (t[6] | default('') | string) | tojson }},
+    {{ (t[7] | default('') | string) | tojson }}
+  ]{{ "," if not loop.last else "" }}
+{% endfor %}
+]
+        </script>
+      </div>
+    </div>
+  </div>
+</div>
 
 {% endblock %}
